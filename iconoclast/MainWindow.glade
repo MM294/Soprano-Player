@@ -10,7 +10,7 @@
     <property name="version">0.1</property>
     <property name="copyright" translatable="yes">(C) 2010 Mike Morley</property>
     <property name="comments" translatable="yes">Diving Headfirst into pygobject</property>
-    <property name="website">http://live.gnome.org/iconoclast</property>
+    <property name="website">http://github.com/HairyPalms/IconoClast</property>
     <property name="website_label" translatable="yes">Iconoclast Homepage</property>
     <property name="license" translatable="yes">		    GNU GENERAL PUBLIC LICENSE
 		       Version 2, June 1991
@@ -384,6 +384,8 @@ Public License instead of this License.
   </object>
   <object class="GtkListStore" id="liststore1">
     <columns>
+      <!-- column-name playListMark -->
+      <column type="gchararray"/>
       <!-- column-name trackListStore -->
       <column type="gint"/>
       <!-- column-name titleListStore -->
@@ -399,17 +401,6 @@ Public License instead of this License.
       <!-- column-name pathListStore -->
       <column type="gchararray"/>
     </columns>
-    <data>
-      <row>
-        <col id="0">0</col>
-        <col id="1" translatable="yes">Master of Puppets</col>
-        <col id="2" translatable="yes">Metallica</col>
-        <col id="3" translatable="yes">The Black Album</col>
-        <col id="4" translatable="yes">3:59</col>
-        <col id="5" translatable="yes">Metal</col>
-        <col id="6" translatable="yes">/home/mike/Desktop/mop.m4a</col>
-      </row>
-    </data>
   </object>
   <object class="GtkWindow" id="win-main">
     <property name="can_focus">False</property>
@@ -934,6 +925,19 @@ audio-volume-medium</property>
                           <object class="GtkTreeSelection" id="treeview-selection1"/>
                         </child>
                         <child>
+                          <object class="GtkTreeViewColumn" id="playMarkCol">
+                            <property name="sizing">fixed</property>
+                            <property name="min_width">20</property>
+                            <property name="max_width">20</property>
+                            <child>
+                              <object class="GtkCellRendererPixbuf" id="cellrendererpixbuf1"/>
+                              <attributes>
+                                <attribute name="icon-name">0</attribute>
+                              </attributes>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
                           <object class="GtkTreeViewColumn" id="trackCol">
                             <property name="sizing">fixed</property>
                             <property name="min_width">30</property>
@@ -942,7 +946,7 @@ audio-volume-medium</property>
                             <child>
                               <object class="GtkCellRendererText" id="cellrenderertext1"/>
                               <attributes>
-                                <attribute name="text">0</attribute>
+                                <attribute name="text">1</attribute>
                               </attributes>
                             </child>
                           </object>
@@ -957,7 +961,7 @@ audio-volume-medium</property>
                             <child>
                               <object class="GtkCellRendererText" id="cellrenderertext2"/>
                               <attributes>
-                                <attribute name="text">1</attribute>
+                                <attribute name="text">2</attribute>
                               </attributes>
                             </child>
                           </object>
@@ -972,7 +976,7 @@ audio-volume-medium</property>
                             <child>
                               <object class="GtkCellRendererText" id="cellrenderertext3"/>
                               <attributes>
-                                <attribute name="text">2</attribute>
+                                <attribute name="text">3</attribute>
                               </attributes>
                             </child>
                           </object>
@@ -987,7 +991,7 @@ audio-volume-medium</property>
                             <child>
                               <object class="GtkCellRendererText" id="cellrenderertext4"/>
                               <attributes>
-                                <attribute name="text">3</attribute>
+                                <attribute name="text">4</attribute>
                               </attributes>
                             </child>
                           </object>
@@ -1002,7 +1006,7 @@ audio-volume-medium</property>
                             <child>
                               <object class="GtkCellRendererText" id="cellrenderertext5"/>
                               <attributes>
-                                <attribute name="text">4</attribute>
+                                <attribute name="text">5</attribute>
                               </attributes>
                             </child>
                           </object>
@@ -1017,7 +1021,7 @@ audio-volume-medium</property>
                             <child>
                               <object class="GtkCellRendererText" id="cellrenderertext6"/>
                               <attributes>
-                                <attribute name="text">5</attribute>
+                                <attribute name="text">6</attribute>
                               </attributes>
                             </child>
                           </object>
@@ -1032,7 +1036,7 @@ audio-volume-medium</property>
                             <child>
                               <object class="GtkCellRendererText" id="cellrenderertext7"/>
                               <attributes>
-                                <attribute name="text">6</attribute>
+                                <attribute name="text">7</attribute>
                               </attributes>
                             </child>
                           </object>
