@@ -42,7 +42,7 @@ def main():
 	print(app.get_state())
 	time.sleep(1)
 	app.play_item()
-	time.sleep(5)
+	time.sleep(15)
 	app.stop_play()
 
 main()

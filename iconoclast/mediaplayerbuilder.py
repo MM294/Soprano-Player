@@ -79,6 +79,8 @@ class BuilderApp:
 
 		#listviewModel
 		self.model = self.builder.get_object('liststore1')
+		self.titleText = self.builder.get_object('lbl-trkTitle')
+		self.infoText = self.builder.get_object('lbl-trkMisc')
 
 		self.notebook = self.builder.get_object('notebook-explorer')
 		self.explorer = FileBrowser('/media/Media/Music')
@@ -134,6 +136,11 @@ class BuilderApp:
 		text = model[row][7]
 		text = "file://" + text 
 		self.playitem(text)
+
+		try: self.titleText.set_text(model[row][2])
+		except: self.titleText.set_text('No Artist')
+		try: self.infoText.set_text(model[row][3])
+		except: self.infoText.set_text('No Album')
 		
 		self.set_playmark(row)
 
@@ -222,7 +229,8 @@ class BuilderApp:
 			modeliter = self.model.get_iter_first()
 			self.set_playmark(0)
 
-		filepath = self.model.get_value(modeliter, 7)
+		try: filepath = self.model.get_value(modeliter, 7)
+		except: return
 
 		toolplayimg = self.builder.get_object('image3')
 		playstate = self.player.get_state()[1]
@@ -234,6 +242,13 @@ class BuilderApp:
 			self.player.set_property("uri", "file://" + filepath)
 			self.player.set_state(gst.STATE_PLAYING)
 
+			getmesumdatabruv = TrackMetaData()
+			x = getmesumdatabruv.getTrackType(filepath)
+
+			try: self.titleText.set_text(x[1])
+			except: self.titleText.set_text('No Artist')
+			try: self.infoText.set_text(x[2])
+			except: self.infoText.set_text('No Album')
 			toolplayimg.set_from_icon_name('media-playback-pause', Gtk.IconSize.LARGE_TOOLBAR)
 
 	def playitem(self, filepath):
@@ -252,6 +267,8 @@ class BuilderApp:
 		self.elapsedTimeLabel = self.builder.get_object('lbl-elapsedTime')
 		self.elapsedTimeLabel.set_text('')
 
+		self.titleText.set_text('Iconoclast Audio Player')
+		self.infoText.set_text('...One Goal, Be Epic')
 		self.clear_playmark()
 		toolplayimg = self.builder.get_object('image3')
 		toolplayimg.set_from_icon_name('media-playback-start', Gtk.IconSize.LARGE_TOOLBAR)
@@ -260,10 +277,20 @@ class BuilderApp:
 		self.player.seek_simple(gst.FORMAT_TIME, gst.SEEK_FLAG_FLUSH, where)
 		self.update_time_labels()
 
+	def toggle_window(self, trayicon):
+		if self.window.get_property("visible"):
+			self.window.hide()
+		else:
+			self.window.show()
+
 def main(iconoclast=None):
 	app = BuilderApp()
 	#default to playlist till i fix other shit#
-	#app.to_playlist_mode(None)      
+	#app.to_playlist_mode(None)
+
+	myStatusIcon = Gtk.StatusIcon()
+	myStatusIcon.set_from_file('decibel-tray.png')
+	myStatusIcon.connect('activate', app.toggle_window)
 
 	#bottom toolbar
 	barclr = app.builder.get_object('btn-tracklistClear')

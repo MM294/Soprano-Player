@@ -4,13 +4,16 @@ import os, stat, time
 from gi.repository import Gtk, GdkPixbuf, Gdk
 from os.path import splitext
 
-class FileBrowser:
+class FileListingCellDataExample:
     column_names = ['Name', 'Size', 'Mode', 'Last Changed']    
+
+    def delete_event(self, widget, event, data=None):
+        Gtk.main_quit()
+        return False
  
-    def __init__(self, dname = None):
+    def __init__(self, widgetArg, dname = None):
  
-        try: listmodel = self.make_list(dname)
-	except: listmodel = self.make_list(os.path.expanduser('~'))
+        listmodel = self.make_list(dname)
  
         # create the TreeView
         self.treeview = Gtk.TreeView()
@@ -31,7 +34,7 @@ class FileBrowser:
         self.treeview.connect('row-activated', self.open_file)
         self.scrolledwindow = Gtk.ScrolledWindow()
         self.scrolledwindow.add(self.treeview)
-        #widgetArg.add(self.scrolledwindow)
+        widgetArg.add(self.scrolledwindow)
         self.treeview.set_model(listmodel)
 	self.treeview.set_headers_visible(False)
  
@@ -48,8 +51,7 @@ class FileBrowser:
 
         return
 
-    def get_sw(self):
-	return self.scrolledwindow
+
 
     def make_list(self, dname=None):
         if not dname:
@@ -114,15 +116,13 @@ class FileBrowser:
 #Test Stuff add to random window
 ##################    
 
-#def main():	
-#	window = Gtk.Window()
-#	flcdexample = FileBrowser('/media/Medi2a')
-#	window.add(flcdexample.get_sw())
-#	window.set_size_request(150, 500)
-#	window.connect("delete_event", Gtk.main_quit)
-#	window.show_all()
-#	print(flcdexample.get_sw())
-#	Gtk.main()
+def main():	
+	window = Gtk.Window()
+	flcdexample = FileListingCellDataExample(window, '/media/Media')
+	window.set_size_request(150, 500)
+	window.connect("delete_event", Gtk.main_quit)
+	window.show_all()
+	Gtk.main()
 
-#if __name__ == "__main__":	
-#	main()
+if __name__ == "__main__":	
+	main()

@@ -651,8 +651,11 @@ Public License instead of this License.
                               <object class="GtkLabel" id="lbl-trkTitle">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="label">&lt;span size="larger"&gt;&lt;b&gt;Iconoclast Audio Player&lt;/b&gt;&lt;/span&gt;</property>
-                                <property name="use_markup">True</property>
+                                <property name="label">Iconoclast Audio Player</property>
+                                <attributes>
+                                  <attribute name="weight" value="bold"/>
+                                  <attribute name="size" value="10000"/>
+                                </attributes>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
@@ -676,8 +679,7 @@ Public License instead of this License.
                               <object class="GtkLabel" id="lbl-trkMisc">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="label">...And Music For All
-</property>
+                                <property name="label">...One Goal, Be Epic</property>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
