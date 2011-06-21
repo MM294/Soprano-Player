@@ -9,6 +9,7 @@ class Gtkvid:
 		window = Gtk.Window()
 		window.set_title("Video-Player")
 		window.set_default_size(500, 400)
+		window.set_startup_id('112116')
 		window.connect("destroy", Gtk.main_quit, "WM destroy")
 		vbox = Gtk.VBox()
 		window.add(vbox)
@@ -61,8 +62,9 @@ class Gtkvid:
 			imagesink.set_property("force-aspect-ratio", True)
 			Gdk.threads_enter()
 			#print(Gdk.Window.xid(self.movie_window.get_parent_window()))
-			#print(self.movie_window.get_parent_window().window_lookup())
-			imagesink.set_xwindow_id(self.movie_window.window.xid)
+			xwin = self.movie_window.get_parent_window()
+			#xwininfo output
+			imagesink.set_xwindow_id(0x2c00003)
 			Gdk.threads_leave()
 def main():		
 	w = Gtkvid()

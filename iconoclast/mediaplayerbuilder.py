@@ -283,14 +283,29 @@ class BuilderApp:
 		else:
 			self.window.show()
 
+	def right_click_event(self, icon, button, time):
+		menu = Gtk.Menu()
+
+		about = Gtk.MenuItem(label="About")
+		quit = Gtk.MenuItem(label="Quit")
+		
+		about.connect("activate", self.about_activate)
+		quit.connect("activate", Gtk.main_quit)
+		
+		menu.append(about)
+		menu.append(quit)
+		
+		menu.show_all()
+
+		menu.popup(None, None, None, button, time, 1)
+
 def main(iconoclast=None):
 	app = BuilderApp()
-	#default to playlist till i fix other shit#
-	#app.to_playlist_mode(None)
 
 	myStatusIcon = Gtk.StatusIcon()
 	myStatusIcon.set_from_file('decibel-tray.png')
 	myStatusIcon.connect('activate', app.toggle_window)
+	myStatusIcon.connect('popup-menu', app.right_click_event)
 
 	#bottom toolbar
 	barclr = app.builder.get_object('btn-tracklistClear')
