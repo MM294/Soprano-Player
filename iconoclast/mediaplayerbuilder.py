@@ -1,7 +1,10 @@
 from gi.repository import Gtk, GdkPixbuf, Gdk, Gio, GObject
 import os
 import gst
+
+from aboutbox import aboutBoxShow
 from tagreading import TrackMetaData
+from FileExplorer import FileBrowser
 
 def widget_hide(widget, button):
     widget.hide()
@@ -72,7 +75,16 @@ class BuilderApp:
 
 		#listview#
 		self.listview = self.builder.get_object('treeview1')
-		self.listview.connect('row-activated', self.on_activated)    
+		self.listview.connect('row-activated', self.on_activated)
+
+		#listviewModel
+		self.model = self.builder.get_object('liststore1')
+
+		self.notebook = self.builder.get_object('notebook-explorer')
+		self.explorer = FileBrowser('/media/Media/Music')
+		self.notebook.add(self.explorer.get_sw())
+		self.notebook.show_all()
+
 
 	#Math Funcs and Other Handlers#
 
@@ -101,20 +113,20 @@ class BuilderApp:
 			return "%i:%02i:%02i" %(h,m,s)
 
 	def about_activate(self, action):
-		about_dlg = self.builder.get_object('aboutdialog1')
-		about_dlg.show()
-		about_dlg.connect('response', widget_hide)
+		aboutBoxShow(self.window)
 
 	def quit_activate(self, action):
         	Gtk.main_quit()
 
 	#Listbox Handlers
 	def add_row(self, action):
-		model = self.builder.get_object('liststore1')
 		action = action.replace('%20',' ')
 		getmesumdatabruv = TrackMetaData()
+		x = getmesumdatabruv.getTrackType(action)
+		x.insert(0, None)
+		#print x
 		if getmesumdatabruv.getTrackType(action) != False:
-			model.append(getmesumdatabruv.getTrackType(action))
+			self.model.append(x)
 
 	def on_activated(self, widget, row, col):        
 		model = widget.get_model()
@@ -125,16 +137,20 @@ class BuilderApp:
 		
 		self.set_playmark(row)
 
-	def set_playmark(self, row):
-		model = self.builder.get_object('liststore1')
+	def clear_playmark(self):
 		i = 0
-		while i != len(model):
-			model.set_value(model.get_iter(i), 0, '')
+		while i != len(self.model):
+			self.model.set_value(self.model.get_iter(i), 0, '')
 			i = i+1
-		model.set_value(model.get_iter(row), 0, 'media-playback-start')
+
+	def set_playmark(self, row):
+		self.clear_playmark()		
+		try: self.model.set_value(row, 0, 'media-playback-start')
+		except: self.model.set_value(self.model.get_iter(row), 0, 'media-playback-start')
 
 	#Drag and Drop Handling
 	def motion_cb(self, windowid, context, x, y, time):
+		#windowid.drag_get_data(context, context.list_targets()[-1], time)
 		return True
 
 	def drop_cb(self, windowid, context, x, y, time):
@@ -178,8 +194,7 @@ class BuilderApp:
 
 	#Bottom Toolbar Handlers#
 	def clear_liststore(self, action):
-		model = self.builder.get_object('liststore1')
-		model.clear()    
+		self.model.clear()    
 
 	#Audio Control Widget Handlers#
 	def change_volume(self, volume, unused):
@@ -199,9 +214,15 @@ class BuilderApp:
 	#Gstreamer Player Handlers#
 	def play_pause(self, filepath):
 		selected = self.builder.get_object('treeview-selection1')
-		modeliter = selected.get_selected()[1]
-		model = self.builder.get_object('liststore1')
-		filepath = model.get_value(modeliter, 6)
+
+		if selected.get_selected()[1] != None:
+			modeliter = selected.get_selected()[1]
+			self.set_playmark(modeliter)
+		elif self.model.get_iter_first() != None:
+			modeliter = self.model.get_iter_first()
+			self.set_playmark(0)
+
+		filepath = self.model.get_value(modeliter, 7)
 
 		toolplayimg = self.builder.get_object('image3')
 		playstate = self.player.get_state()[1]
@@ -226,6 +247,12 @@ class BuilderApp:
 	def stop_play(self, unused):
 		self.player.set_state(gst.STATE_NULL)
 
+		self.timeLabel = self.builder.get_object('lbl-remainingTime')
+		self.timeLabel.set_text('')
+		self.elapsedTimeLabel = self.builder.get_object('lbl-elapsedTime')
+		self.elapsedTimeLabel.set_text('')
+
+		self.clear_playmark()
 		toolplayimg = self.builder.get_object('image3')
 		toolplayimg.set_from_icon_name('media-playback-start', Gtk.IconSize.LARGE_TOOLBAR)
 
@@ -236,7 +263,7 @@ class BuilderApp:
 def main(iconoclast=None):
 	app = BuilderApp()
 	#default to playlist till i fix other shit#
-	app.to_playlist_mode(None)      
+	#app.to_playlist_mode(None)      
 
 	#bottom toolbar
 	barclr = app.builder.get_object('btn-tracklistClear')

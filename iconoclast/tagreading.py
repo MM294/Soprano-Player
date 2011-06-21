@@ -45,7 +45,7 @@ class TrackMetaData:
 		m,s = divmod(tracklength, 60)
 		tracklength = "%02i:%02i" %(m,s)
 
-		return None, tracknum, songtitle, artist, album, tracklength, genre, filepath
+		return [tracknum, songtitle, artist, album, tracklength, genre, filepath]
 
 	def m4aInfo(self, filepath):
 		audio = MP4(filepath)
@@ -68,7 +68,7 @@ class TrackMetaData:
 		m,s = divmod(tracklength, 60)
 		tracklength = "%02i:%02i" %(m,s)
 
-		return None, tracknum, songtitle, artist, album, tracklength, genre, filepath
+		return [tracknum, songtitle, artist, album, tracklength, genre, filepath]
 
 	def oggInfo(self, filepath):
 		audio = OggVorbis(filepath)
@@ -91,7 +91,7 @@ class TrackMetaData:
 		m,s = divmod(tracklength, 60)
 		tracklength = "%02i:%02i" %(m,s)
 
-		return None, tracknum, songtitle, artist, album, tracklength, genre, filepath
+		return [tracknum, songtitle, artist, album, tracklength, genre, filepath]
 
 	def flacInfo(self, filepath):
 		audio = FLAC(filepath)
@@ -114,7 +114,7 @@ class TrackMetaData:
 		m,s = divmod(tracklength, 60)
 		tracklength = "%02i:%02i" %(m,s)
 
-		return None, tracknum, songtitle, artist, album, tracklength, genre, filepath
+		return [tracknum, songtitle, artist, album, tracklength, genre, filepath]
 
 	def wmaInfo(self, filepath):
 		audio = ASF(filepath)
@@ -137,7 +137,7 @@ class TrackMetaData:
 		m,s = divmod(tracklength, 60)
 		tracklength = "%02i:%02i" %(m,s)
 
-		return None, tracknum, songtitle, artist, album, tracklength, genre, filepath
+		return [tracknum, songtitle, artist, album, tracklength, genre, filepath]
 
 #getmesumdatabruv = TrackMetaData()
 #print(getmesumdatabruv.getTrackType("/media/Media/Music/Carlos Santana/Playin With Carlos/02-carlos_santana-too_late_too_late_(feat_gregg_rolie).mp3"))

@@ -565,6 +565,7 @@ Public License instead of this License.
             <property name="position">1</property>
             <child>
               <object class="GtkVBox" id="box-explorer">
+                <property name="width_request">200</property>
                 <property name="can_focus">False</property>
                 <property name="border_width">12</property>
                 <property name="spacing">12</property>
@@ -572,7 +573,6 @@ Public License instead of this License.
                   <object class="GtkNotebook" id="notebook-explorer">
                     <property name="can_focus">True</property>
                     <property name="show_tabs">False</property>
-                    <property name="show_border">False</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
