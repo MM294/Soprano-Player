@@ -5,6 +5,7 @@ import gst
 from aboutbox import aboutBoxShow
 from tagreading import TrackMetaData
 from FileExplorer import FileBrowser
+from treefilebrowser import TreeFileBrowser
 
 def widget_hide(widget, button):
     widget.hide()
@@ -58,8 +59,11 @@ class BuilderApp:
 		self.menuvplist.connect('activate', self.to_playlist_mode)
 
 		#playing Toolbar
+		self.toolnext = self.builder.get_object('btn-next')
+		self.toolnext.connect('clicked', self.play_next)
+
 		self.toolprev = self.builder.get_object('btn-previous')
-		self.toolprev.connect('clicked', self.stop_play)
+		self.toolprev.connect('clicked', self.play_prev)
 
 		self.toolstop = self.builder.get_object('btn-stop')
 		self.toolstop.connect('clicked', self.stop_play)
@@ -82,11 +86,18 @@ class BuilderApp:
 		self.titleText = self.builder.get_object('lbl-trkTitle')
 		self.infoText = self.builder.get_object('lbl-trkMisc')
 
+		#notebook and contents
 		self.notebook = self.builder.get_object('notebook-explorer')
-		self.explorer = FileBrowser('/media/Media/Music')
-		self.notebook.add(self.explorer.get_sw())
-		self.notebook.show_all()
 
+		self.explorer = FileBrowser('/media/Media/Music')
+
+		self.explorer2 = TreeFileBrowser('/media/Media/Music')
+		#templabel= Gtk.Label("roflcopter")
+		self.notebook.add(self.explorer.get_sw())
+		self.notebook.add(self.explorer2.get_scrolled())
+		#self.notebook.add(templabel)
+
+		self.notebook.show_all()
 
 	#Math Funcs and Other Handlers#
 
@@ -124,10 +135,10 @@ class BuilderApp:
 	def add_row(self, action):
 		action = action.replace('%20',' ')
 		getmesumdatabruv = TrackMetaData()
-		x = getmesumdatabruv.getTrackType(action)
-		x.insert(0, None)
+		x = getmesumdatabruv.getTrackType(action)		
 		#print x
-		if getmesumdatabruv.getTrackType(action) != False:
+		if x != False:
+			x.insert(0, None)
 			self.model.append(x)
 
 	def on_activated(self, widget, row, col):        
@@ -259,7 +270,7 @@ class BuilderApp:
 		toolplayimg = self.builder.get_object('image3')
 		toolplayimg.set_from_icon_name('media-playback-pause', Gtk.IconSize.LARGE_TOOLBAR)	
 
-	def stop_play(self, unused):
+	def stop_play(self, *args):
 		self.player.set_state(gst.STATE_NULL)
 
 		self.timeLabel = self.builder.get_object('lbl-remainingTime')
@@ -273,6 +284,25 @@ class BuilderApp:
 		toolplayimg = self.builder.get_object('image3')
 		toolplayimg.set_from_icon_name('media-playback-start', Gtk.IconSize.LARGE_TOOLBAR)
 
+	def play_prev(self, unused):
+		for x in range(1,len(self.model)):
+			if ("file://" + self.model[x][7]) == self.player.get_property("uri"):
+				print "file://" + self.model[x][7]
+				self.stop_play()
+				self.playitem("file://" + self.model[x-1][7])
+				self.set_playmark(x-1)
+				break
+
+	def play_next(self, unused):
+		print(self.player.get_property("uri"))
+		for x in range(0,len(self.model)-1):
+			if ("file://" + self.model[x][7]) == self.player.get_property("uri"):
+				print "file://" + self.model[x][7]
+				self.stop_play()
+				self.playitem("file://" + self.model[x+1][7])
+				self.set_playmark(x+1)
+				break
+
 	def seek(self, widget, test, where):
 		self.player.seek_simple(gst.FORMAT_TIME, gst.SEEK_FLAG_FLUSH, where)
 		self.update_time_labels()
@@ -284,20 +314,31 @@ class BuilderApp:
 			self.window.show()
 
 	def right_click_event(self, icon, button, time):
-		menu = Gtk.Menu()
+		self.menu = Gtk.Menu()
 
-		about = Gtk.MenuItem(label="About")
-		quit = Gtk.MenuItem(label="Quit")
+		about = Gtk.MenuItem()
+		about.set_label("About")
+		quit = Gtk.MenuItem()
+		quit.set_label("Quit")
 		
 		about.connect("activate", self.about_activate)
-		quit.connect("activate", Gtk.main_quit)
+		quit.connect("activate", self.quit_activate)
 		
-		menu.append(about)
-		menu.append(quit)
+		self.menu.append(about)
+		self.menu.append(quit)
 		
-		menu.show_all()
+		self.menu.show_all()
 
-		menu.popup(None, None, None, button, time, 1)
+		def pos(menu, ignore, aicon):
+			return (Gtk.StatusIcon.position_menu(menu, aicon))
+
+		self.menu.popup(None, None, pos, icon, button, time)
+
+	def reorderliststore(self, widget):
+		order = range(len(self.model))
+		import random
+        	random.shuffle(order)
+        	self.model.reorder(order)
 
 def main(iconoclast=None):
 	app = BuilderApp()
@@ -310,6 +351,9 @@ def main(iconoclast=None):
 	#bottom toolbar
 	barclr = app.builder.get_object('btn-tracklistClear')
 	barclr.connect('clicked', app.clear_liststore)
+
+	barshfl = app.builder.get_object('btn-tracklistShuffle')
+	barshfl.connect('clicked', app.reorderliststore)
 
 	if __name__ == '__main__':
 		Gtk.main()

@@ -31,12 +31,9 @@ class FileBrowser:
         self.treeview.connect('row-activated', self.open_file)
         self.scrolledwindow = Gtk.ScrolledWindow()
         self.scrolledwindow.add(self.treeview)
-        #widgetArg.add(self.scrolledwindow)
         self.treeview.set_model(listmodel)
 	self.treeview.set_headers_visible(False)
  
-        #self.window.show_all()
-	
 	#list of file extensions to be showed
 	self.fileFormats = {'.mp3','.ogg','.oga','.wma','.flac','.m4a','.mp4'}
 
@@ -116,7 +113,7 @@ class FileBrowser:
 
 #def main():	
 #	window = Gtk.Window()
-#	flcdexample = FileBrowser('/media/Medi2a')
+#	flcdexample = FileBrowser('/media/Media')
 #	window.add(flcdexample.get_sw())
 #	window.set_size_request(150, 500)
 #	window.connect("delete_event", Gtk.main_quit)

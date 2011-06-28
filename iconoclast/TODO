@@ -1,0 +1,15 @@
+rewrite treefilebrowser (sort folders before directorys, filters for non-music, hide parent folder)
+
+implement drag and drop for treefilebrowser and iconfilebrowser
+
+next and back buttons on UI
+
+automatic next track
+
+Media Library
+
+CoverArt
+
+Shuffle and Repeat
+
+StatusIcon popupmenu

@@ -37,8 +37,8 @@ class MusicPlayer:
 #debugging function
 def main():
 	app = MusicPlayer(True)
-	app.set_track("file:///home/mike/Downloads/Cheerleader.Academy.2.XXX.720p.Bluray.x264-Jiggly/Sample/jiggly-cheeleaaca-720p-sample.mkv")
-	app.change_volume(0.5)
+	app.set_track("file:///media/Media/Music/Carlos Santana/Playin With Carlos/02-carlos_santana-too_late_too_late_(feat_gregg_rolie).mp3")
+	app.change_volume(1.5)
 	app.play_item()
 	time.sleep(5)
 	app.seek(50000000000)

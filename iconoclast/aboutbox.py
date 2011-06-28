@@ -1,5 +1,5 @@
 import os.path
-from gi.repository import Gtk, GdkPixbuf, Gio;
+from gi.repository import Gtk;
 
 def aboutBoxShow(parent):
     """ Show an about dialog box """
@@ -26,4 +26,4 @@ def aboutBoxShow(parent):
     aboutBox.destroy()
 
 #just for testing remove when used
-#show(None)
+#aboutBoxShow(None)
