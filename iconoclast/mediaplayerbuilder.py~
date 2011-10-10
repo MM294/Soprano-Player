@@ -305,7 +305,7 @@ class BuilderApp:
 			toolplayimg.set_from_icon_name('media-playback-pause', Gtk.IconSize.LARGE_TOOLBAR)
 
 	def playitem(self, filepath):
-		self.player.set_state(gst.STATE_NULL)
+		#self.player.set_state(gst.STATE_NULL)
 		self.player.set_property("uri", filepath)
 		self.player.set_state(gst.STATE_PLAYING)
 

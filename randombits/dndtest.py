@@ -1,5 +1,3 @@
-#Working Drag and Drop Example with pyGobject and gtk
-#based on the pygtk example for gtk2
 from gi.repository import Gtk, GdkPixbuf, Gdk, Gio, GObject
 
 def motion_cb(windowid, context, x, y, time):

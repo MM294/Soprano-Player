@@ -64,7 +64,7 @@ class Gtkvid:
 			#print(Gdk.Window.xid(self.movie_window.get_parent_window()))
 			xwin = self.movie_window.get_parent_window()
 			#xwininfo output
-			imagesink.set_xwindow_id(0x2c00003)
+			#imagesink.set_xwindow_id(0x2c00003)
 			Gdk.threads_leave()
 def main():		
 	w = Gtkvid()
@@ -73,4 +73,4 @@ def main():
     		Gtk.main()
 
 main()	
-#/home/mike/Downloads/Cheerleader.Academy.2.XXX.720p.Bluray.x264-Jiggly/Sample/jiggly-cheeleaaca-720p-sample.mkv
+#/home/mike/Downloads/she.flv

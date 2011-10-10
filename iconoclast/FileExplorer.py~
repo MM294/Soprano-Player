@@ -120,7 +120,7 @@ class FileBrowser:
 def main():	
 	window = Gtk.Window()
 	flcdexample = FileBrowser('/media/Media/Music')
-	flcdexample.get_sw().get_child().drag_source_set(0, [], 0)
+	flcdexample.get_sw().drag_source_set(0, [], 0)
 	window.add(flcdexample.get_sw())
 	window.set_size_request(150, 500)
 	window.connect("delete_event", Gtk.main_quit)

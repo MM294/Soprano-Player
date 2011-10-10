@@ -60,5 +60,4 @@ def main():
 	app.stop_play()
 	app.set_track("file:///media/Media/Music/Carlos Santana/Playin With Carlos/02-carlos_santana-too_late_too_late_(feat_gregg_rolie).mp3")
 	app.play_item()
-	time.sleep(10)
 main()

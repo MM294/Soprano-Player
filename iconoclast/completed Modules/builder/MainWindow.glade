@@ -244,7 +244,7 @@
                             <property name="height_request">107</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="pixbuf">iconoclast.png</property>
+                            <property name="stock">gtk-dialog-question</property>
                           </object>
                         </child>
                       </object>

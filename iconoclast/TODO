@@ -1,15 +1,9 @@
-rewrite treefilebrowser (sort folders before directorys, filters for non-music, hide parent folder)
+rewrite treefilebrowser (sort folders before directorys, filters for non-music, hide parent folder) (low priority)
 
-implement drag and drop for treefilebrowser and iconfilebrowser
-
-next and back buttons on UI
-
-automatic next track
-
-Media Library
+implement drag and drop for iconfilebrowser
 
 CoverArt
 
-Shuffle and Repeat
+sort out the farking listview to accept drags from nautilus properly
 
-StatusIcon popupmenu
+Media Library
