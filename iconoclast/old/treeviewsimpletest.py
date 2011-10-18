@@ -1,4 +1,4 @@
-from gi.repository import Gtk, GdkPixbuf, Gdk
+from gi.repository import Gtk
 import os
 
 def got_data_cb(windowid, context, x, y, data, info, time):
@@ -28,12 +28,6 @@ def main():
 	column.add_attribute(title, "text", 0)
 	atree = Gtk.TreeView(amodel)
 	atree.append_column(column)
-
-	builder = Gtk.Builder()
-	filename = os.path.join('', 'treeview.ui')
-	builder.add_from_file(filename)
-	abox = builder.get_object('treeview1')
-	abox.set_reorderable(True)
 
 	atree.drag_dest_set(0, [], 0)
 	atree.connect('drag_motion', lambda v,w,x,y,z: True)

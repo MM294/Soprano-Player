@@ -98,7 +98,7 @@
       <object class="GtkTreeViewColumn" id="albumCol">
         <property name="resizable">True</property>
         <property name="sizing">fixed</property>
-        <property name="min_width">100</property>
+        <property name="min_width">140</property>
         <property name="title" translatable="yes">Album</property>
         <property name="clickable">True</property>
         <child>
@@ -113,7 +113,7 @@
       <object class="GtkTreeViewColumn" id="lengthCol">
         <property name="resizable">True</property>
         <property name="sizing">fixed</property>
-        <property name="min_width">45</property>
+        <property name="min_width">60</property>
         <property name="title" translatable="yes">Length</property>
         <property name="clickable">True</property>
         <child>

@@ -6,7 +6,7 @@ def aboutBoxShow(parent):
     aboutBox = Gtk.AboutDialog(program_name='Iconoclast Media Player')
 
     aboutBox.set_name("Iconoclast Media Player")
-    aboutBox.set_comments('...And Music For All')
+    aboutBox.set_comments('...One Goal, Be Epic')
     aboutBox.set_version('0.02')
     aboutBox.set_copyright('(C) 2010 Mike Morley')
     aboutBox.set_website('http://github.com/HairyPalms/IconoClast')

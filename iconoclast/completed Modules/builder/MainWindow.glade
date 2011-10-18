@@ -113,18 +113,6 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkRadioMenuItem" id="menu-mode-lean">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="use_action_appearance">False</property>
-                        <property name="label" translatable="yes">Lean</property>
-                        <property name="use_underline">True</property>
-                        <property name="draw_as_radio">True</property>
-                        <property name="group">menu-mode-full</property>
-                        <accelerator key="l" signal="activate" modifiers="GDK_SHIFT_MASK | GDK_CONTROL_MASK"/>
-                      </object>
-                    </child>
-                    <child>
                       <object class="GtkRadioMenuItem" id="menu-mode-playlist">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
@@ -244,7 +232,7 @@
                             <property name="height_request">107</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="stock">gtk-dialog-question</property>
+                            <property name="stock">gtk-missing-image</property>
                           </object>
                         </child>
                       </object>
@@ -277,6 +265,31 @@
                                 <property name="expand">False</property>
                                 <property name="fill">True</property>
                                 <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="lbl-length">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="justify">right</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">False</property>
+                                <property name="pack_type">end</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="lbl-elapsed">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">False</property>
+                                <property name="pack_type">end</property>
+                                <property name="position">2</property>
                               </packing>
                             </child>
                           </object>
@@ -442,6 +455,7 @@
                                 <child>
                                   <object class="GtkHScale" id="scl-position">
                                     <property name="visible">True</property>
+                                    <property name="sensitive">False</property>
                                     <property name="can_focus">True</property>
                                     <property name="no_show_all">True</property>
                                     <property name="has_tooltip">True</property>
@@ -531,7 +545,7 @@ audio-volume-medium</property>
                     <property name="homogeneous">True</property>
                     <property name="layout_style">spread</property>
                     <child>
-                      <object class="GtkButton" id="btn-tracklistShuffle">
+                      <object class="GtkToggleButton" id="btn-tracklistShuffle">
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
                         <property name="has_tooltip">True</property>

@@ -1,5 +1,5 @@
 import os
-from gi.repository import Gtk, GObject, GdkPixbuf, Gdk;
+from gi.repository import Gtk, GdkPixbuf, Gdk;
 
 try: filepb = Gtk.IconTheme.get_default().load_icon('audio-x-generic', 16, Gtk.IconLookupFlags.FORCE_SIZE)
 except:  filepb = Gtk.IconTheme.get_default().load_icon('empty', 16, Gtk.IconLookupFlags.FORCE_SIZE)
@@ -22,16 +22,16 @@ class IconoTreeFile():
 		col.add_attribute(render_text, 'text', 1)
 
 		render_pb = Gtk.CellRendererPixbuf()
-		col.pack_start(render_pb, True)
+		col.pack_start(render_pb, False)
 		col.add_attribute(render_pb, 'pixbuf', 0)
 
 		treeview.append_column(col)
 		treeview.set_headers_visible(False)
 		treeview.show()
 		treeview.connect("test-expand-row", self.on_expand)
+		treeview.connect('row-activated', self.on_activate)
 	
-		self.sw.add(treeview)
-		
+		self.sw.add(treeview)		
 
 		treeview.set_model(treestore)
 		treeview.get_selection().set_mode(Gtk.SelectionMode.MULTIPLE)
@@ -76,12 +76,19 @@ class IconoTreeFile():
 		for filez in mediaFiles:
 			treeview.get_model().append(iter, filez)
 
+	def on_activate(self, treeview, path, column):
+		if treeview.row_expanded(path):
+			treeview.collapse_row(path)
+		else:
+			treeview.expand_row(path, False)
+
 	def on_expand(self, treeview, iter, path):
-		tempiter = treeview.get_model().iter_children(iter)#.get_value(iter, 3) treeview.iter_children(iter)
+		tempiter = treeview.get_model().iter_children(iter)
 		if treeview.get_model().get_value(tempiter, 1) == "iconoph":
 			treeview.get_model().remove(tempiter)
-		self.setup_treestore(treeview, path, iter)
+			self.setup_treestore(treeview, path, iter)
 
+	#2 more methods inspired by decibel#
 	def getDirContents(self, directory):
 		""" Return a tuple of sorted rows (directories, playlists, mediaFiles) for the given directory """
 		mediaFiles  = []
@@ -99,35 +106,26 @@ class IconoTreeFile():
 
 		return (directories, mediaFiles)
 
-	#__dirCache = {}
-
 	def listDir(self, directory, listHiddenFiles=False):
-	    """
-		Return a list of tuples (filename, path) with the given directory content
-		The dircache module sorts the list of files, and either it's not needed or it's not sorted the way we want
-	    """
-	    #if directory in __dirCache: cachedMTime, list = __dirCache[directory]
-	    #else:                       cachedMTime, list = None, None
 
-	    #if os.path.exists(directory): mTime = os.stat(directory).st_mtime
-	    #else:                         mTime = 0
-
-	    #if mTime != cachedMTime:
-		# Make sure it's readable
 	    if os.access(directory, os.R_OK | os.X_OK): list = os.listdir(directory)
 	    else:                                       list = []
-
-		#__dirCache[directory] = (mTime, list)
 
 	    return [(filename, os.path.join(directory, filename)) for filename in list if listHiddenFiles or filename[0] != '.']
 
 	def get_sw(self):
 		return self.sw
 
-"""#debug and testing stuff
-treefile = IconoTreeFile('/media/Media/Music', {'.mp3','.ogg','.oga','.wma','.flac','.m4a','.mp4'})
+#debug and testing stuff
+"""treefile = IconoTreeFile('/media/Media/Music', {'.mp3','.ogg','.oga','.wma','.flac','.m4a','.mp4'})
+treefile2 = IconoTreeFile('/', {'.mp3','.ogg','.oga','.wma','.flac','.m4a','.mp4'})
+treefile3 = IconoTreeFile('/home/mike', {'.mp3','.ogg','.oga','.wma','.flac','.m4a','.mp4'})
 window = Gtk.Window()
-window.add(treefile.get_sw())
+nb = Gtk.Notebook()
+nb.add(treefile.get_sw())
+nb.add(treefile2.get_sw())
+nb.add(treefile3.get_sw())
+window.add(nb)
 
 window.set_size_request(200, 500)
 window.connect("delete_event", Gtk.main_quit)

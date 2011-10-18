@@ -3,10 +3,12 @@
 from gi.repository import Gtk, GdkPixbuf
 import os
 
+PREF_LOCATION='/home/mike/Desktop/Python/IconoClast/iconoclast/prefs.conf'
+
 class PrefWin(Gtk.Window):
 	def __init__(self):
 		Gtk.Window.__init__(self, title="Preferences")
-		self.connect('destroy', lambda x: Gtk.main_quit())
+		self.connect('destroy', lambda x: self.destroy())
 		self.set_default_size(450, 400)
 
 		self.categorylist = []
@@ -73,7 +75,7 @@ def main():
 	abox2.add(alabel2)
 	abox2.add(acheckbox2)
 
-	builder = Gtk.Builder()
+	"""builder = Gtk.Builder()
 	filename = os.path.join('', 'examplepage.glade')
 	builder.add_from_file(filename)
 	abox3 = builder.get_object('box1')
@@ -81,13 +83,13 @@ def main():
 	builder2 = Gtk.Builder()
 	filename2 = os.path.join('', 'treeview.ui')
 	builder2.add_from_file(filename2)
-	abox4 = builder2.get_object('treeview1')
+	abox4 = builder2.get_object('treeview1')"""
 	
 	win = PrefWin()
 	win.create_category("Desktop", "folder", abox)
 	win.create_category("Network", "network", abox2)
-	win.create_category("Flub", "preferences-desktop", abox3)
-	win.create_category("TV", "preferences-desktop", abox4)
+	#win.create_category("Flub", "preferences-desktop", abox3)
+	#win.create_category("TV", "preferences-desktop", abox4)
 	if __name__ == '__main__':
 		Gtk.main()
 main()
