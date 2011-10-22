@@ -1,20 +1,21 @@
 import os.path
+from settings import sopranoGlobals
 from gi.repository import Gtk;
 
-def aboutBoxShow(parent):
+def aboutBoxShow(widget, parent):
     """ Show an about dialog box """
-    aboutBox = Gtk.AboutDialog(program_name='Iconoclast Media Player')
+    aboutBox = Gtk.AboutDialog(program_name='Soprano Media Player')
 
-    aboutBox.set_name("Iconoclast Media Player")
+    aboutBox.set_name("Soprano Media Player")
     aboutBox.set_comments('...One Goal, Be Epic')
     aboutBox.set_version('0.02')
     aboutBox.set_copyright('(C) 2010 Mike Morley')
     aboutBox.set_website('http://github.com/HairyPalms/IconoClast')
-    aboutBox.set_website_label('Iconoclast Homepage')
+    aboutBox.set_website_label('Soprano Homepage')
     aboutBox.set_translator_credits('translator-credits')
-    aboutBox.set_artists([('Iconoclast Icon:'), 'Mike Morley <mmorely19@gmail.com>'])
+    aboutBox.set_artists([('Soprano Icon:'), 'Mike Morley <mmorely19@gmail.com>'])
     aboutBox.set_authors([('Developer:'),'Mike Morley <mmorely19@gmail.com>'])
-    aboutBox.set_logo_icon_name('rhythmbox')
+    aboutBox.set_logo(sopranoGlobals.PLACEHOLDER)
 
     # Load the licence from the disk if possible
     if os.path.isfile(os.path.join('data', 'gpl2.txt')) :

@@ -20,10 +20,23 @@ class TrackMetaData:
 			filepath = filepath.replace('%25', '%')
 			filepath = filepath.replace('%23', '#')
 			return options[fileExtension](filepath)
-		elif not filepath.find('cdda://') == -1:
+		elif filepath[:7] == 'cdda://':#not filepath.find('cdda://') == -1:
 			return self.cdtrkInfo(filepath)
+		elif filepath[:7] == 'http://' or filepath[:6] == 'mms://':
+			return self.radioInfo(filepath)
 		else:
-			return False		
+			return False
+
+	def radioInfo(self, filepath):
+		tracknum = None
+		songtitle = "Unknown Title"
+		artist = "Radio Station"
+		album = "Radio Station"
+		genre = None
+		
+		tracklength = "N/A"
+
+		return [tracknum, songtitle, artist, album, tracklength, genre, filepath]		
 
 	def cdtrkInfo(self, filepath):
 		tracknum = int(filepath.replace('cdda://',''))

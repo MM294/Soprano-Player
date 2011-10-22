@@ -1,12 +1,9 @@
 import os
 from gi.repository import Gtk, GdkPixbuf, Gdk;
-
-try: filepb = Gtk.IconTheme.get_default().load_icon('audio-x-generic', 16, Gtk.IconLookupFlags.FORCE_SIZE)
-except:  filepb = Gtk.IconTheme.get_default().load_icon('empty', 16, Gtk.IconLookupFlags.FORCE_SIZE)
+from settings import sopranoGlobals, settings
 
 class IconoTreeFile():
 	def __init__(self, root, fileFormats):
-		self.folderpb = Gtk.IconTheme.get_default().load_icon('folder', 16, Gtk.IconLookupFlags.FORCE_SIZE)
 		self.root = root
 		self.sw = Gtk.ScrolledWindow()	
 		self.fileFormats = fileFormats
@@ -39,9 +36,12 @@ class IconoTreeFile():
 		treeview.drag_source_add_uri_targets()
 		treeview.drag_source_add_text_targets()
 
+		treeview.connect('button_press_event', self.on_button_press)
+		treeview.connect('button_release_event', self.on_button_release)
 		treeview.connect("drag_data_get", self.drag_data_get_cb)
 		treeview.connect("drag_begin", self.drag_begin_cb)
 		self.setup_treestore(treeview, self.root)
+		self.defer_select=False
 
 	def drag_data_get_cb(self, widget, drag_context, selection, info, time):
 		data = []
@@ -72,7 +72,7 @@ class IconoTreeFile():
 			else:
 				directories2, mediaFiles2 = self.getDirContents(os.path.join(treeview.get_model().get_value(iter, 3), subdir[1]))
 			if not directories2 == [] or not mediaFiles2 == []:
-				treeview.get_model().append(tempiter, [self.folderpb,"iconoph", 3, ""])
+				treeview.get_model().append(tempiter, [sopranoGlobals.FOLDERPB,"iconoph", 3, ""])
 		for filez in mediaFiles:
 			treeview.get_model().append(iter, filez)
 
@@ -88,6 +88,25 @@ class IconoTreeFile():
 			treeview.get_model().remove(tempiter)
 			self.setup_treestore(treeview, path, iter)
 
+	def on_button_press(self, widget, event):
+		# Here we intercept mouse clicks on selected items so that we can
+		# drag multiple items without the click selecting only one
+		target = widget.get_path_at_pos(int(event.x), int(event.y))
+		if (target 
+		   and event.type == Gdk.EventType.BUTTON_PRESS
+		   and not (event.get_state() & (Gdk.ModifierType.CONTROL_MASK|Gdk.ModifierType.SHIFT_MASK))
+		   and widget.get_selection().path_is_selected(target[0])):
+			   # disable selection
+			   widget.get_selection().set_select_function(lambda *ignore: False, None)
+			   self.defer_select = target[0]
+	def on_button_release(self, widget, event):
+		# re-enable selection
+		widget.get_selection().set_select_function(lambda *ignore: True, None)
+
+		target = widget.get_path_at_pos(int(event.x), int(event.y))	
+		if (self.defer_select and target and self.defer_select == target[0] and not (event.x==0 and event.y==0)): # certain drag and drop
+   				widget.set_cursor(target[0], target[1], False)
+
 	#2 more methods inspired by decibel#
 	def getDirContents(self, directory):
 		""" Return a tuple of sorted rows (directories, playlists, mediaFiles) for the given directory """
@@ -96,10 +115,10 @@ class IconoTreeFile():
 
 		for (file, path) in self.listDir(directory, False):
 		    if os.path.isdir(path):
-		        directories.append((self.folderpb, file, 1, path))
+		        directories.append((sopranoGlobals.FOLDERPB, file, 1, path))
 		    elif os.path.isfile(path):
 			if os.path.splitext(file.lower())[1] in self.fileFormats:
-		            mediaFiles.append((filepb, file, 0, path))                
+		            mediaFiles.append((sopranoGlobals.FILEPB, file, 0, path))                
 
 		mediaFiles.sort()
 		directories.sort()

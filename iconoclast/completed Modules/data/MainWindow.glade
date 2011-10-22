@@ -6,6 +6,16 @@
     <property name="upper">100</property>
     <property name="step_increment">5</property>
   </object>
+  <object class="GtkImage" id="image5">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-directory</property>
+  </object>
+  <object class="GtkImage" id="image6">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="icon_name">folder-remote</property>
+  </object>
   <object class="GtkListStore" id="liststore1">
     <columns>
       <!-- column-name playListMark -->
@@ -28,7 +38,7 @@
   </object>
   <object class="GtkWindow" id="win-main">
     <property name="can_focus">False</property>
-    <property name="title">Iconoclast Audio Player</property>
+    <property name="title">Soprano Audio Player</property>
     <property name="window_position">center</property>
     <property name="icon_name">rhythmbox</property>
     <accel-groups>
@@ -74,15 +84,27 @@
                   <object class="GtkMenu" id="menu-edit">
                     <property name="can_focus">False</property>
                     <child>
-                      <object class="GtkImageMenuItem" id="menu-preferences">
-                        <property name="label">gtk-preferences</property>
+                      <object class="GtkImageMenuItem" id="menu-folderadd">
+                        <property name="label">Add Folder</property>
                         <property name="can_focus">False</property>
-                        <property name="tooltip_text" translatable="yes">Display preferences</property>
+                        <property name="tooltip_text" translatable="yes">Add a New Base Folder</property>
                         <property name="use_action_appearance">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="use_stock">True</property>
+                        <property name="image">image5</property>
+                        <property name="use_stock">False</property>
                         <property name="accel_group">accelgroup1</property>
                         <accelerator key="p" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="menu-radioadd">
+                        <property name="label" translatable="yes">Add Radio</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="tooltip_text" translatable="yes">Add a New Radio Station</property>
+                        <property name="use_action_appearance">False</property>
+                        <property name="image">image6</property>
+                        <property name="use_stock">False</property>
+                        <accelerator key="r" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                     </child>
                   </object>
@@ -255,7 +277,7 @@
                               <object class="GtkLabel" id="lbl-trkTitle">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="label">Iconoclast Audio Player</property>
+                                <property name="label">Soprano Audio Player</property>
                                 <attributes>
                                   <attribute name="weight" value="bold"/>
                                   <attribute name="size" value="10000"/>

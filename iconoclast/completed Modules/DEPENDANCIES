@@ -1,3 +1,8 @@
 python-cddb
 gir1.2-totem-plparser-1.0 --when playlists implemented
 python-dbus when mediakeys implemented
+
+['Hard Radio','http://66.90.91.59:80/hardradio2.aac'],
+['BBC Radio 1','mms://wmlive-acl.bbc.co.uk/wms/bbc_ami/radio1/radio1_bb_live_ep1_sl0?BBC-UID=444e49edeef5c06f8dec7b2ea1361914767b5add90107144142fe41618f06e3a&amp;SSO2-UID=']
+['Radio 5 Live','mms://wmlive-acl.bbc.co.uk/wms/bbc_ami/radio5/radio5_bb_live_ep1_sl0?BBC-UID=e4fe595d6e0668a8f6b17e0ed1b7dc2f2a70d361a0900104744fb9e7e246269b&amp;SSO2-UID=']
+['Japan A Radio','http://audio.misproductions.com:9030/']]

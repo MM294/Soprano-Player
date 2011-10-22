@@ -1,13 +1,21 @@
-Multiple Selection Drag and Drop
-Better Default Icon
+--High Prio
+Media Keys - DONE
+Multiple Selection Drag and Drop - Done But Horribly Hacky and buggy
+Speed up Listview
+Smarter Column Sorting
+Single Instance
 
-Internet Radio
-Playlists
-Media Keys
-Preferences
-non-destructive shuffle - DONE
+--Medium Prio
+Internet Radio - DONE
+Playlists, will improve net radio too
 sort by album and tracknum when tracks added
-drag and drop at specific points
+Preferences
 
-Multiple CD drive support
+--Low Prio
 lookup CD metadata
+Media Library
+MPRIS support
+
+
+--Specifics
+delFolderExplorer should be rewritten to remove one page rather than removing and remaking the entire notebook

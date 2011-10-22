@@ -19,8 +19,11 @@ class HeaderedComboBox(Gtk.ComboBox):
 
 		self.set_entry_text_column(1)
 
-	def add_entry(self, index, header, Name, pixbuf=None):
-		self.name_store.append([index, header, Name, pixbuf])
+	def add_entry(self, index, header, Name, pixbuf=None, insertHere=None):
+		if insertHere == -1:
+			self.name_store.append([index, header, Name, pixbuf])
+		else:
+			self.name_store.insert(insertHere+1, [index, header, Name, pixbuf])
 
 """#testing and debugging bits below
 folderpb = Gtk.IconTheme.get_default().load_icon('folder', 16, Gtk.IconLookupFlags.FORCE_SIZE)

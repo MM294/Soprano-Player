@@ -2,12 +2,10 @@
 import urllib2, os
 from gi.repository import GdkPixbuf
 import threading
+from settings import sopranoGlobals
 
 LASTFM_API_KEY = 'e92e11a5f1a8f8f154b45face4398499' #My Personal LastFM key, get your own if using this code in another application
 USERAGENT = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.1) Gecko/2008072820 Firefox/7.0.0'
-
-CACHEFILE = os.path.join(os.path.expanduser('~'), '.iconocache.jpg')
-PLACEHOLDER = os.path.join('data','iconoclast.png')
 
 class getCover(threading.Thread):
 	def __init__(self, artist, album, filelocation=None):
@@ -30,7 +28,7 @@ class getCover(threading.Thread):
 			request = urllib2.Request(coverURL, headers = {'User-Agent': USERAGENT})
 			stream  = urllib2.urlopen(request)
 			data    = stream.read()
-			output = open(CACHEFILE, 'wb')
+			output = open(sopranoGlobals.CACHEFILE, 'wb')
 			output.write(data)
 			output.close()
 			return True
@@ -52,9 +50,9 @@ class getCover(threading.Thread):
 		if self.getLocalCover(self.filelocation):
 			img = GdkPixbuf.Pixbuf().new_from_file(self.folderjpg)
 		elif self.getLastFMCover(self.artist, self.album):		
-			img = GdkPixbuf.Pixbuf().new_from_file(CACHEFILE)
+			img = GdkPixbuf.Pixbuf().new_from_file(sopranoGlobals.CACHEFILE)
 		else:
-			img = GdkPixbuf.Pixbuf().new_from_file(PLACEHOLDER)
+			img = sopranoGlobals.PLACEHOLDER
 		return img
 
 #Debugging stuff and example usage below this, comment out when in use

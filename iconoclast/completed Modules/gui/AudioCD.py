@@ -1,8 +1,9 @@
 from gi.repository import Gtk, GObject, GdkPixbuf, Gdk
+from settings import sopranoGlobals
 
 class IconoAudioCD():
 	def __init__(self, device=None):
-		self.trackpb = Gtk.IconTheme.get_default().load_icon('media-cdrom-audio', 16, Gtk.IconLookupFlags.FORCE_SIZE)
+		#sopranoGlobals.TRACKPB = Gtk.IconTheme.get_default().load_icon('media-cdrom-audio', 16, Gtk.IconLookupFlags.FORCE_SIZE)
 		self.device = device
 		self.sw = Gtk.ScrolledWindow()	
 
@@ -80,10 +81,10 @@ class IconoAudioCD():
 			(first, last) = cdrom.toc_header(device)
 			cdtracks = []
 			for i in range(first, last+1):
-				cdtracks.append([self.trackpb, "Track " + str(i), 3, 'cdda://' + str(i) ])
+				cdtracks.append([sopranoGlobals.TRACKPB, "Track " + str(i), 3, 'cdda://' + str(i) ])
 			return cdtracks
 		except:
-			return [[self.trackpb, "No CD Found", 3, '' ]]		
+			return [[sopranoGlobals.TRACKPB, "No Audio CD Found", 3, '' ]]		
 
 	def get_sw(self):
 		return self.sw

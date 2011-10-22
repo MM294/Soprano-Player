@@ -18,6 +18,26 @@ class IconoSettings:
 			settings = ['full', 900, 550, 2, False, False]
 		return settings
 
+class IconoPrefs(object):
+	def __init__(self, filelocation):
+		self.path = filelocation
+
+	def add_radio(self, station):
+		try: settings = pickle.load( open(self.path, "rb" ) )
+		except: settings = {}
+		settings[station[0]] = station[1]
+		pickle.dump(settings, open(self.path, "wb"))
+
+	def delete_radio(self, station):
+		settings = pickle.load( open(self.path, "rb" ) )
+		del settings[station[0]]
+		pickle.dump(settings, open(self.path, "wb"))
+
+	def get_radioStations(self):
+		try: prefs = pickle.load( open(self.path, "rb" ) )
+		except: prefs = {}
+		return prefs
+
 #i = IconoSettings('/home/mike/Desktop/settings.icono')
 #i.write_settings(['full', '1200','750' ,'3'])
 #print i.get_settings()

@@ -9,7 +9,7 @@ class IconoTray:
 		except: APPIND_SUPPORT = 0
 
 		if APPIND_SUPPORT == 1:
-			self.ind = AppIndicator3.Indicator.new("iconoclast-indicator-applet", iconname, AppIndicator3.IndicatorCategory.APPLICATION_STATUS)
+			self.ind = AppIndicator3.Indicator.new("Soprano", iconname, AppIndicator3.IndicatorCategory.APPLICATION_STATUS)
 			self.ind.set_status (AppIndicator3.IndicatorStatus.ACTIVE)
 			self.ind.set_menu(self.menu)
 		else:
