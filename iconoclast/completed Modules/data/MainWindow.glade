@@ -40,7 +40,7 @@
     <property name="can_focus">False</property>
     <property name="title">Soprano Audio Player</property>
     <property name="window_position">center</property>
-    <property name="icon_name">rhythmbox</property>
+    <property name="icon_name">soprano-player</property>
     <accel-groups>
       <group name="accelgroup1"/>
     </accel-groups>
@@ -53,7 +53,6 @@
             <child>
               <object class="GtkMenuItem" id="menuitem1">
                 <property name="can_focus">False</property>
-                <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">_File</property>
                 <property name="use_underline">True</property>
                 <child type="submenu">
@@ -64,7 +63,6 @@
                         <property name="label">gtk-quit</property>
                         <property name="can_focus">False</property>
                         <property name="tooltip_text" translatable="yes">Quit the application</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <property name="accel_group">accelgroup1</property>
@@ -77,7 +75,6 @@
             <child>
               <object class="GtkMenuItem" id="menuitem2">
                 <property name="can_focus">False</property>
-                <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">_Edit</property>
                 <property name="use_underline">True</property>
                 <child type="submenu">
@@ -85,10 +82,9 @@
                     <property name="can_focus">False</property>
                     <child>
                       <object class="GtkImageMenuItem" id="menu-folderadd">
-                        <property name="label">Add Folder</property>
+                        <property name="label">Manage Folders</property>
                         <property name="can_focus">False</property>
                         <property name="tooltip_text" translatable="yes">Add a New Base Folder</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="image">image5</property>
                         <property name="use_stock">False</property>
                         <property name="accel_group">accelgroup1</property>
@@ -101,7 +97,6 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="tooltip_text" translatable="yes">Add a New Radio Station</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="image">image6</property>
                         <property name="use_stock">False</property>
                         <accelerator key="r" signal="activate" modifiers="GDK_CONTROL_MASK"/>
@@ -115,7 +110,6 @@
               <object class="GtkMenuItem" id="menuitem3">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">_View</property>
                 <property name="use_underline">True</property>
                 <child type="submenu">
@@ -126,7 +120,6 @@
                       <object class="GtkRadioMenuItem" id="menu-mode-full">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="label" translatable="yes">Full</property>
                         <property name="use_underline">True</property>
                         <property name="active">True</property>
@@ -138,7 +131,6 @@
                       <object class="GtkRadioMenuItem" id="menu-mode-playlist">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="label" translatable="yes">Playlist</property>
                         <property name="use_underline">True</property>
                         <property name="draw_as_radio">True</property>
@@ -150,7 +142,6 @@
                       <object class="GtkRadioMenuItem" id="menu-mode-mini">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="label" translatable="yes">Mini</property>
                         <property name="use_underline">True</property>
                         <property name="draw_as_radio">True</property>
@@ -165,7 +156,6 @@
             <child>
               <object class="GtkMenuItem" id="menuitem4">
                 <property name="can_focus">False</property>
-                <property name="use_action_appearance">False</property>
                 <property name="label" translatable="yes">_Help</property>
                 <property name="use_underline">True</property>
                 <child type="submenu">
@@ -176,7 +166,6 @@
                         <property name="label">gtk-about</property>
                         <property name="can_focus">False</property>
                         <property name="tooltip_text" translatable="yes">Display about dialog box</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <property name="accel_group">accelgroup1</property>
@@ -363,7 +352,6 @@
                                         <property name="receives_default">True</property>
                                         <property name="has_tooltip">True</property>
                                         <property name="tooltip_text" translatable="yes">Play the previous track</property>
-                                        <property name="use_action_appearance">False</property>
                                         <property name="relief">none</property>
                                         <child>
                                           <object class="GtkImage" id="image1">
@@ -384,7 +372,6 @@
                                         <property name="receives_default">True</property>
                                         <property name="has_tooltip">True</property>
                                         <property name="tooltip_text" translatable="yes">Stop the current track</property>
-                                        <property name="use_action_appearance">False</property>
                                         <property name="relief">none</property>
                                         <child>
                                           <object class="GtkImage" id="image2">
@@ -405,7 +392,6 @@
                                         <property name="receives_default">True</property>
                                         <property name="has_tooltip">True</property>
                                         <property name="tooltip_text" translatable="yes">Play the first track of the playlist</property>
-                                        <property name="use_action_appearance">False</property>
                                         <property name="relief">none</property>
                                         <child>
                                           <object class="GtkImage" id="image3">
@@ -426,7 +412,6 @@
                                         <property name="receives_default">True</property>
                                         <property name="has_tooltip">True</property>
                                         <property name="tooltip_text" translatable="yes">Play the next track</property>
-                                        <property name="use_action_appearance">False</property>
                                         <property name="relief">none</property>
                                         <child>
                                           <object class="GtkImage" id="image4">
@@ -519,7 +504,6 @@
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
                                 <property name="no_show_all">True</property>
-                                <property name="use_action_appearance">False</property>
                                 <property name="relief">none</property>
                                 <property name="use_stock">True</property>
                                 <property name="focus_on_click">False</property>
@@ -572,7 +556,6 @@ audio-volume-medium</property>
                         <property name="receives_default">True</property>
                         <property name="has_tooltip">True</property>
                         <property name="tooltip_text" translatable="yes">Shuffle the playlist</property>
-                        <property name="use_action_appearance">False</property>
                         <child>
                           <object class="GtkHBox" id="hbox4">
                             <property name="can_focus">False</property>
@@ -613,7 +596,6 @@ audio-volume-medium</property>
                         <property name="receives_default">True</property>
                         <property name="has_tooltip">True</property>
                         <property name="tooltip_text" translatable="yes">Play all tracks endlessly</property>
-                        <property name="use_action_appearance">False</property>
                         <child>
                           <object class="GtkHBox" id="hbox7">
                             <property name="can_focus">False</property>
@@ -654,7 +636,6 @@ audio-volume-medium</property>
                         <property name="receives_default">True</property>
                         <property name="has_tooltip">True</property>
                         <property name="tooltip_text" translatable="yes">Clear the playlist</property>
-                        <property name="use_action_appearance">False</property>
                         <child>
                           <object class="GtkHBox" id="hbox6">
                             <property name="can_focus">False</property>
@@ -710,11 +691,32 @@ audio-volume-medium</property>
           </packing>
         </child>
         <child>
-          <object class="GtkStatusbar" id="statusbar">
+          <object class="GtkBox" id="box1">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="orientation">vertical</property>
-            <property name="spacing">2</property>
+            <child>
+              <object class="GtkSeparator" id="separator1">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToolbar" id="toolbar1">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
           </object>
           <packing>
             <property name="expand">False</property>

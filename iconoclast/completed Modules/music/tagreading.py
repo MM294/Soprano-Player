@@ -4,32 +4,41 @@ from mutagen.mp4 import MP4
 from mutagen.oggvorbis import OggVorbis
 from mutagen.flac import FLAC
 from mutagen.asf import ASF
-import os.path
+import os.path, cdrom
+from settings import sopranoGlobals, settings
 
-FILE_FORMATS = {'.mp3','.ogg','.oga','.wma','.flac','.m4a','.mp4'}
+FILE_FORMATS = {'.mp3','.ogg','.oga','.wma','.flac','.m4a','.mp4','.aac'}
 
 class TrackMetaData:
 	def getTrackType(self, filepath):
-		options = {'.ogg' : self.oggInfo, '.oga' : self.oggInfo, '.mp4' : self.m4aInfo, '.m4a' : self.m4aInfo, '.mp2' : self.id3Info, '.mp3' : self.id3Info, '.flac' : self.flacInfo, '.wma' : self.wmaInfo,}
+		options = {'.ogg' : self.oggInfo, '.oga' : self.oggInfo, '.mp4' : self.m4aInfo, '.m4a' : self.m4aInfo, '.aac' : self.m4aInfo, '.mp2' : self.id3Info, '.mp3' : self.id3Info, '.flac' : self.flacInfo, '.wma' : self.wmaInfo,}
 
 		fileExtension = os.path.splitext(filepath.lower())[1]
-		if fileExtension in FILE_FORMATS:
+		if filepath[:7] == 'http://' or filepath[:6] == 'mms://':
+			return self.radioInfo(filepath)
+		elif fileExtension in FILE_FORMATS:
 			filepath = filepath.replace('%5B','[')
 			filepath = filepath.replace('%5D',']')
 			filepath = filepath.replace('file://','')
 			filepath = filepath.replace('%25', '%')
 			filepath = filepath.replace('%23', '#')
 			return options[fileExtension](filepath)
-		elif filepath[:7] == 'cdda://':#not filepath.find('cdda://') == -1:
+		elif filepath[:7] == 'cdda://':
 			return self.cdtrkInfo(filepath)
-		elif filepath[:7] == 'http://' or filepath[:6] == 'mms://':
-			return self.radioInfo(filepath)
 		else:
 			return False
 
 	def radioInfo(self, filepath):
-		tracknum = None
-		songtitle = "Unknown Title"
+		self.editPref = settings.IconoPrefs(sopranoGlobals.RADIO_DATA)
+		stations = self.editPref.get_radioStations()
+		for key, value in self.editPref.get_radioStations().items():
+			if filepath == value:
+				songtitle = key
+				break
+			else:
+				songtitle = "zUnknown Title"
+
+		tracknum = None		
 		artist = "Radio Station"
 		album = "Radio Station"
 		genre = None
@@ -40,9 +49,9 @@ class TrackMetaData:
 
 	def cdtrkInfo(self, filepath):
 		tracknum = int(filepath.replace('cdda://',''))
-		songtitle = "Unknown Title"
+		songtitle = "Track " + str(tracknum)
 		artist = "Unknown Artist"
-		album = "Unknown Album"
+		album = "Compact Disc"
 		genre = None
 		
 		tracklength = "%02i:%02i" %(0,0)
@@ -65,7 +74,8 @@ class TrackMetaData:
 			try:    tracknum = int(tracknum.split('/')[0])
 			except ValueError: tracknum = 0
 			except: tracknum = int(tracknum)
-		try: songtitle = audio["TIT2"][0]
+		#print (audio["TIT2"][0]).encode('ascii', 'replace')
+		try: songtitle = (audio["TIT2"][0]).encode('ascii', 'replace')
 		except: songtitle = "Unknown Title"
 		try: artist = audio["TPE1"][0]
 		except: artist = "Unknown Artist"
@@ -181,4 +191,4 @@ class TrackMetaData:
 		return [tracknum, songtitle, artist, album, tracklength, genre, filepath]
 
 #getmesumdatabruv = TrackMetaData()
-#print(getmesumdatabruv.getTrackType("/media/Media/Music/Carlos Santana/Playin With Carlos/02-carlos_santana-too_late_too_late_(feat_gregg_rolie).mp3"))
+#print(getmesumdatabruv.getTrackType("/media/Media/Music/Noel Gallagher/High Flying Birds/01 Everybody's On The Run.mp3"))

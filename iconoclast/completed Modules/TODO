@@ -1,21 +1,26 @@
 --High Prio
-Media Keys - DONE
-Multiple Selection Drag and Drop - Done But Horribly Hacky and buggy
+Playlists, will improve net radio too
 Speed up Listview
-Smarter Column Sorting
-Single Instance
 
 --Medium Prio
-Internet Radio - DONE
-Playlists, will improve net radio too
 sort by album and tracknum when tracks added
-Preferences
+Smarter Column Sorting
 
 --Low Prio
 lookup CD metadata
-Media Library
+Media Library - Could be done by creating symlinks to all files in a hidden local folder!
 MPRIS support
-
 
 --Specifics
 delFolderExplorer should be rewritten to remove one page rather than removing and remaking the entire notebook
+enable realtime resizing to work with view changing
+
+--DONE
+enable more detail Transfer from radio to the liststore - DONE
+Internet Radio - DONE
+Media Keys - DONE
+Audio CD - DONE
+Dont Hang on No Internet - DONE
+Multiple Selection Drag and Drop - DONE
+Single Instance - DONE
+Preferences - DONE

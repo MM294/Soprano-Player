@@ -15,13 +15,14 @@ from gui.propertreefilebrowser import IconoTreeFile # about 14.5mb of memory
 from gui.AudioCD import IconoAudioCD # 14.3mb of Memory
 from gui.NetRadio import IconoRadio
 from gui.liststore import IconoListView # about 11.2mb of memory
+from gui.prefs import SopranoPrefWin
 
 class SopranoApp:
 	def __init__(self):
 		#Global Variables (keep to a minimum)
 		self.settings = settings.IconoSettings(sopranoGlobals.SETTINGS_DATA)
 		self.taglookup = TrackMetaData()
-		self.seekingnow = False
+		self.seekingnow = False		
 		#preferences
 		self.trayicon = True
 		#load settings
@@ -31,11 +32,14 @@ class SopranoApp:
 		self.builder = Gtk.Builder()
 		filename = os.path.join('data', 'MainWindow.glade')
 		self.builder.add_from_file(filename)
-		self.builder.connect_signals(self)	
+		self.builder.connect_signals(self)
 
 		self.window = self.builder.get_object('win-main')
 		self.window.set_default_size(self.winwidth,self.winheight)
 		self.window.connect('destroy', self.on_exit)
+		
+		#radiowindow
+		self.aRadio = IconoRadio()
 
 		#Gstreamer sink
 		self.player = MusicPlayer()
@@ -48,7 +52,8 @@ class SopranoApp:
 		if self.trayicon:
 			#trayicon
 			from gui.trayicon import IconoTray
-			self.tray = IconoTray("rhythmbox-panel")
+			self.tray = IconoTray("rhythmbox")
+			#self.tray = IconoTray("soprano-player-tray")
 			self.tray.add_menu_item(self.toggle_window, "Show")
 			self.tray.add_seperator()
 			self.tray.add_menu_item(self.play_pause, "Play")
@@ -73,10 +78,12 @@ class SopranoApp:
 
 		#Edit Menu#
 		menuaddfolder = self.builder.get_object('menu-folderadd')
-		menuaddfolder.connect('activate', lambda x: self.addFolderExplorer(('Video','/media/Media/Videos')))
+		#menuaddfolder.connect('activate', lambda x: self.addFolderExplorer(('Video','/media/Media/Videos')))
+		menuaddfolder.connect('activate', self.show_pref_win)
 
 		menuaddradio = self.builder.get_object('menu-radioadd')
-		menuaddradio.connect('activate', lambda x: self.delFolderExplorer(('Video','/media/Media/Videos')))
+		#menuaddradio.connect('activate', lambda x: self.delFolderExplorer(('Video','/media/Media/Videos')))
+		menuaddradio.connect('activate', self.aRadio.addStationDialog)
 
 		#playing Toolbar
 		self.toolnext = self.builder.get_object('btn-next')
@@ -121,7 +128,7 @@ class SopranoApp:
 		#listview
 		self.iconoListView = IconoListView()
 		self.iconoListView.get_sw().get_child().connect('row-activated', self.on_activated)
-		self.iconoListView.get_sw().get_child().connect('button-press-event', self.on_right_click)
+		#self.iconoListView.get_sw().get_child().connect('button-press-event', self.on_right_click)
 		vbox2 = self.builder.get_object('vbox2')
 		vbox2.add(self.iconoListView.get_sw())
 		vbox2.reorder_child(self.iconoListView.get_sw(), 1)
@@ -145,7 +152,18 @@ class SopranoApp:
 			self.to_mini_mode()
 		#Notebook
 		self.notebook = self.builder.get_object('notebook-explorer')
-	
+
+	def show_pref_win(self, widget=None):
+		newWin = SopranoPrefWin()
+		newWin.win.show_all()
+		newWin.win.connect("destroy", pref_win_closed)
+
+	def pref_win_closed(self, widget=None):
+		self.clear_notebook
+		self.setup_explorer
+		self.notebook.set_current_page(self.defaultexplorer)
+		self.hCombo.set_active(self.defaultexplorer)
+
 	def toggle_window(self, trayicon):
 		if self.window.get_property("visible"):
 			self.window.hide()
@@ -168,7 +186,7 @@ class SopranoApp:
 		Gtk.main_quit()
 
 	def addFolderExplorer(self, station):		
-		explorer = IconoTreeFile(station[1], {'.mp3','.ogg','.oga','.wma','.flac','.m4a','.mp4'})
+		explorer = IconoTreeFile(station[1], sopranoGlobals.FILE_FORMATS)
 		audioFolderlist = settings.IconoPrefs(sopranoGlobals.EXPLORER_DATA)
 		audioFolderlist.add_radio(station)
 		self.setup_explorer_page(self.notebook, explorer.get_sw(), self.hCombo, [len(audioFolderlist.get_radioStations()), 0, station[0], sopranoGlobals.FOLDERPB], self.notebook.get_n_pages()-2)
@@ -179,30 +197,32 @@ class SopranoApp:
 			iter = model.get_iter(length-i)
 			model.set_value(iter, 0, length-(1+i))
 
-	def delFolderExplorer(self, station):
+	def clear_notebook(self, widget=None):
 		for i in xrange(self.notebook.get_n_pages(), 0, -1):
 			self.notebook.remove_page(i-1)
+		self.hCombo.get_model().clear()
+
+	def delFolderExplorer(self, station):
+		self.clear_notebook()
 		audioFolderlist = settings.IconoPrefs(sopranoGlobals.EXPLORER_DATA)
 		audioFolderlist.delete_radio(station)
-		self.hCombo.get_model().clear()
 		self.setup_explorer()
 		
 
 	#explorer and combobox Handlers
-	def setup_explorer(self):
+	def setup_explorer(self, widget=None):
 		self.hCombo.add_entry(None, 1, "<b>Folders</b>", None, -1)
 
-		explorer = IconoTreeFile('/', {'.mp3','.ogg','.oga','.wma','.flac','.m4a','.mp4'})
+		explorer = IconoTreeFile('/', sopranoGlobals.FILE_FORMATS)
 		self.setup_explorer_page(self.notebook, explorer.get_sw(), self.hCombo, [self.notebook.get_n_pages(), 0, "Root", sopranoGlobals.FOLDERPB])
 
 		audioFolderlist = settings.IconoPrefs(sopranoGlobals.EXPLORER_DATA)
 		for key, value in audioFolderlist.get_radioStations().iteritems():
-			explorer = IconoTreeFile(value, {'.mp3','.ogg','.oga','.wma','.flac','.m4a','.mp4'})	
+			explorer = IconoTreeFile(value, sopranoGlobals.FILE_FORMATS)	
 			self.setup_explorer_page(self.notebook, explorer.get_sw(), self.hCombo, [self.notebook.get_n_pages(), 0, key, sopranoGlobals.FOLDERPB])
 		aCdTree = IconoAudioCD()
-		self.setup_explorer_page(self.notebook, aCdTree.get_sw(), self.hCombo, [self.notebook.get_n_pages(), 0, "<b>Audio CD</b>", sopranoGlobals.TRACKPB])
-		aRadio = IconoRadio(self.window)
-		self.setup_explorer_page(self.notebook, aRadio.get_sw(), self.hCombo, [self.notebook.get_n_pages(), 0, "<b>Radio</b>", sopranoGlobals.RADIOPB])
+		self.setup_explorer_page(self.notebook, aCdTree.get_sw(), self.hCombo, [self.notebook.get_n_pages(), 0, "<b>Audio CD</b>", sopranoGlobals.TRACKPB])		
+		self.setup_explorer_page(self.notebook, self.aRadio.get_sw(), self.hCombo, [self.notebook.get_n_pages(), 0, "<b>Radio</b>", sopranoGlobals.RADIOPB])
 
 		self.notebook.set_current_page(self.defaultexplorer)
 		self.hCombo.set_active(self.defaultexplorer)		
@@ -230,7 +250,7 @@ class SopranoApp:
 		GObject.idle_add(self.playitem, text)
 		self.iconoListView.set_playmark(row)
 
-	def remove_rows(self, widget, treeview):
+	"""def remove_rows(self, widget, treeview):
 		model, selected = treeview.get_selection().get_selected_rows()
 		for i in reversed(selected):
 			tempiter = model.get_iter(i)
@@ -248,7 +268,7 @@ class SopranoApp:
 			self.menu.append(aMenuitem)
 			self.menu.show_all()
 			self.menu.popup( None, None, None, None, event.button, event.time)
-			return True
+			return True"""
 
 	#View Menu Handlers
 	def to_full_mode(self, unused=None):
@@ -394,7 +414,11 @@ class SopranoApp:
 	def play_pause(self, filepath=None):
 		toolplayimg = self.builder.get_object('image3')
 		if (self.player.get_state() == gst.STATE_PLAYING):
-			self.player.pause_item()
+			if self.player.get_player().get_property("uri")[:7] == 'http://' or self.player.get_player().get_property("uri")[:6] == 'mms://':
+				self.player.stop_play()
+				print("Radio Stop")
+			else:
+				self.player.pause_item()
 			toolplayimg.set_from_icon_name('media-playback-start', Gtk.IconSize.LARGE_TOOLBAR)			
 		elif (self.player.get_state() == gst.STATE_PAUSED):
 			self.player.play_item()
@@ -413,6 +437,11 @@ class SopranoApp:
 			self.iconoListView.set_playmark(modeliter)
 			toolplayimg.set_from_icon_name('media-playback-pause', Gtk.IconSize.LARGE_TOOLBAR)
 			GObject.idle_add(self.cover_update)
+
+import fcntl
+LOCK_PATH = os.path.join(os.path.expanduser('~'), '.sopranolock')
+fd = open(LOCK_PATH, 'w')
+fcntl.lockf(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
 
 app = SopranoApp()
 if __name__ == '__main__':

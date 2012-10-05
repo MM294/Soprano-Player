@@ -2,7 +2,7 @@ from gi.repository import Gtk, GObject, GdkPixbuf, Gdk
 from settings import sopranoGlobals
 
 class IconoAudioCD():
-	def __init__(self, device=None):
+	def __init__(self, device='/dev/sr0'):
 		#sopranoGlobals.TRACKPB = Gtk.IconTheme.get_default().load_icon('media-cdrom-audio', 16, Gtk.IconLookupFlags.FORCE_SIZE)
 		self.device = device
 		self.sw = Gtk.ScrolledWindow()	
@@ -35,6 +35,10 @@ class IconoAudioCD():
 		treeview.connect('button-press-event', self.on_right_click)
 		treeview.connect("drag_data_get", self.drag_data_get_cb)
 		treeview.connect("drag_begin", self.drag_begin_cb)
+
+		treeview.connect('button_press_event', self.on_button_press)
+		treeview.connect('button_release_event', self.on_button_release)
+		self.defer_select=False
 		GObject.idle_add(lambda: self.refreshDiscs(treeview, self.device))
 
 	def on_right_click(self, widget, event):
@@ -84,13 +88,33 @@ class IconoAudioCD():
 				cdtracks.append([sopranoGlobals.TRACKPB, "Track " + str(i), 3, 'cdda://' + str(i) ])
 			return cdtracks
 		except:
-			return [[sopranoGlobals.TRACKPB, "No Audio CD Found", 3, '' ]]		
+			return [[sopranoGlobals.TRACKPB, "No Audio CD Found", 3, '' ]]
+
+	def on_button_press(self, widget, event):
+		# Here we intercept mouse clicks on selected items so that we can
+		# drag multiple items without the click selecting only one
+		target = widget.get_path_at_pos(int(event.x), int(event.y))
+		if (target 
+		   and event.type == Gdk.EventType.BUTTON_PRESS
+		   and not (event.get_state() & (Gdk.ModifierType.CONTROL_MASK|Gdk.ModifierType.SHIFT_MASK))
+		   and widget.get_selection().path_is_selected(target[0])):
+			   # disable selection
+			   widget.get_selection().set_select_function(lambda *ignore: False, None)
+			   self.defer_select = target[0]
+
+	def on_button_release(self, widget, event):
+		# re-enable selection
+		widget.get_selection().set_select_function(lambda *ignore: True, None)
+
+		target = widget.get_path_at_pos(int(event.x), int(event.y))	
+		if (self.defer_select and target and self.defer_select == target[0] and not (event.x==0 and event.y==0)): # certain drag and drop
+   				widget.set_cursor(target[0], target[1], False)
 
 	def get_sw(self):
 		return self.sw
 
 #debug and testing stuff
-"""treefile = IconoAudioCD('/dev/cdrom')
+"""treefile = IconoAudioCD('/dev/sr0')
 window = Gtk.Window()
 window.add(treefile.get_sw())
 

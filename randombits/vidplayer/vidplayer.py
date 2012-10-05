@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys, os
-from gi.repository import Gtk, GObject, Gdk
+from gi.repository import Gtk, GObject, Gdk, GdkX11
 import gst
 
 class Gtkvid:	
@@ -64,7 +64,8 @@ class Gtkvid:
 			#print(Gdk.Window.xid(self.movie_window.get_parent_window()))
 			xwin = self.movie_window.get_parent_window()
 			#xwininfo output
-			#imagesink.set_xwindow_id(0x2c00003)
+			xid = drawing.get_property('window').get_xid()
+			imagesink.set_xwindow_id(xid)
 			Gdk.threads_leave()
 def main():		
 	w = Gtkvid()
