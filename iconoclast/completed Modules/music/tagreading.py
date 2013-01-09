@@ -4,7 +4,7 @@ from mutagen.mp4 import MP4
 from mutagen.oggvorbis import OggVorbis
 from mutagen.flac import FLAC
 from mutagen.asf import ASF
-import os.path, cdrom
+import os.path
 from settings import sopranoGlobals, settings
 
 FILE_FORMATS = {'.mp3','.ogg','.oga','.wma','.flac','.m4a','.mp4','.aac'}
@@ -17,12 +17,11 @@ class TrackMetaData:
 		if filepath[:7] == 'http://' or filepath[:6] == 'mms://':
 			return self.radioInfo(filepath)
 		elif fileExtension in FILE_FORMATS:
-			filepath = filepath.replace('%5B','[')
-			filepath = filepath.replace('%5D',']')
-			filepath = filepath.replace('file://','')
-			filepath = filepath.replace('%25', '%')
-			filepath = filepath.replace('%23', '#')
-			return options[fileExtension](filepath)
+			filepath = filepath.replace('%5B','[').replace('%5D',']').replace('file://','').replace('%25', '%').replace('%23', '#')
+			if os.path.exists(filepath):
+				return options[fileExtension](filepath)
+			else:
+				return False
 		elif filepath[:7] == 'cdda://':
 			return self.cdtrkInfo(filepath)
 		else:
@@ -36,7 +35,7 @@ class TrackMetaData:
 				songtitle = key
 				break
 			else:
-				songtitle = "zUnknown Title"
+				songtitle = "Unknown Title"
 
 		tracknum = None		
 		artist = "Radio Station"
@@ -45,7 +44,7 @@ class TrackMetaData:
 		
 		tracklength = "N/A"
 
-		return [tracknum, songtitle, artist, album, tracklength, genre, filepath]		
+		return [None, tracknum, songtitle, artist, album, tracklength, genre, filepath]		
 
 	def cdtrkInfo(self, filepath):
 		tracknum = int(filepath.replace('cdda://',''))
@@ -56,7 +55,7 @@ class TrackMetaData:
 		
 		tracklength = "%02i:%02i" %(0,0)
 
-		return [tracknum, songtitle, artist, album, tracklength, genre, filepath]
+		return [None, tracknum, songtitle, artist, album, tracklength, genre, filepath]
 
 	def getTracklength(self, filepath):
 		tracklength = int(round(MP3(filepath).info.length))
@@ -65,9 +64,11 @@ class TrackMetaData:
 		return tracklength
 		
 	def id3Info(self, filepath):
+		#from time import time as systime
+		#systime1 = systime()
 		try: audio = MP3(filepath)
-		except: return [0, '', '', '', self.getTracklength(filepath), '', filepath]
-
+		except: return [None, 0, '', '', '', self.getTracklength(filepath), '', filepath]
+		#print(systime() - systime1)
 		try: tracknum = audio["TRCK"][0]
 		except: tracknum = None
 		if tracknum is not None:
@@ -75,7 +76,7 @@ class TrackMetaData:
 			except ValueError: tracknum = 0
 			except: tracknum = int(tracknum)
 		#print (audio["TIT2"][0]).encode('ascii', 'replace')
-		try: songtitle = (audio["TIT2"][0]).encode('ascii', 'replace')
+		try: songtitle = (audio["TIT2"][0])#.encode('ascii', 'replace')
 		except: songtitle = "Unknown Title"
 		try: artist = audio["TPE1"][0]
 		except: artist = "Unknown Artist"
@@ -87,12 +88,12 @@ class TrackMetaData:
 		tracklength = int(round(audio.info.length))
 		m,s = divmod(tracklength, 60)
 		tracklength = "%02i:%02i" %(m,s)
-		filepath = "file://" + filepath
-		return [tracknum, songtitle, artist, album, tracklength, genre, filepath]
+		filepath = "%s%s" % ("file://",filepath)
+		return [None, tracknum, songtitle, artist, album, tracklength, genre, filepath]
 
 	def m4aInfo(self, filepath):
 		try: audio = MP4(filepath)
-		except: return [0, '', '', '', self.getTracklength(filepath), '', filepath]
+		except: return [None, 0, '', '', '', self.getTracklength(filepath), '', filepath]
 
 		try: tracknum = audio["trkn"][0][0]
 		except: tracknum = None
@@ -112,12 +113,12 @@ class TrackMetaData:
 		tracklength = int(round(audio.info.length))
 		m,s = divmod(tracklength, 60)
 		tracklength = "%02i:%02i" %(m,s)
-		filepath = "file://" + filepath
-		return [tracknum, songtitle, artist, album, tracklength, genre, filepath]
+		filepath = "%s%s" % ("file://",filepath)
+		return [None, tracknum, songtitle, artist, album, tracklength, genre, filepath]
 
 	def oggInfo(self, filepath):
 		try: audio = OggVorbis(filepath)
-		except: return [0, '', '', '', self.getTracklength(filepath), '', filepath]
+		except: return [None, 0, '', '', '', self.getTracklength(filepath), '', filepath]
 
 		try: tracknum = audio["tracknumber"][0] 
 		except: tracknum = None
@@ -137,12 +138,12 @@ class TrackMetaData:
 		tracklength = int(round(audio.info.length))
 		m,s = divmod(tracklength, 60)
 		tracklength = "%02i:%02i" %(m,s)
-		filepath = "file://" + filepath
-		return [tracknum, songtitle, artist, album, tracklength, genre, filepath]
+		filepath = "%s%s" % ("file://",filepath)
+		return [None, tracknum, songtitle, artist, album, tracklength, genre, filepath]
 
 	def flacInfo(self, filepath):
 		try: audio = FLAC(filepath)
-		except: return [0, '', '', '', self.getTracklength(filepath), '', filepath]
+		except: return [None, 0, '', '', '', self.getTracklength(filepath), '', filepath]
 
 		try: tracknum = audio["tracknumber"][0] 
 		except: tracknum = None
@@ -162,12 +163,12 @@ class TrackMetaData:
 		tracklength = int(round(audio.info.length))
 		m,s = divmod(tracklength, 60)
 		tracklength = "%02i:%02i" %(m,s)
-		filepath = "file://" + filepath
-		return [tracknum, songtitle, artist, album, tracklength, genre, filepath]
+		filepath = "%s%s" % ("file://",filepath)
+		return [None, tracknum, songtitle, artist, album, tracklength, genre, filepath]
 
 	def wmaInfo(self, filepath):
 		try: audio = ASF(filepath)
-		except: return [0, '', '', '', self.getTracklength(filepath), '', filepath]
+		except: return [None, 0, '', '', '', self.getTracklength(filepath), '', filepath]
 
 		try: tracknum = audio["WM/TrackNumber"][0]
 		except: tracknum = None
@@ -187,8 +188,8 @@ class TrackMetaData:
 		tracklength = int(round(audio.info.length))
 		m,s = divmod(tracklength, 60)
 		tracklength = "%02i:%02i" %(m,s)
-		filepath = "file://" + filepath
-		return [tracknum, songtitle, artist, album, tracklength, genre, filepath]
+		filepath = "%s%s" % ("file://",filepath)
+		return [None, tracknum, songtitle, artist, album, tracklength, genre, filepath]
 
 #getmesumdatabruv = TrackMetaData()
 #print(getmesumdatabruv.getTrackType("/media/Media/Music/Noel Gallagher/High Flying Birds/01 Everybody's On The Run.mp3"))

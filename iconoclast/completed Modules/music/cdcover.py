@@ -1,5 +1,7 @@
 #Many props to Francois Inglerest, much of this cdcover code is based on the knowledge from decibel
-import urllib2, os
+try: import urllib.request as urllib
+except: import urllib2 as urllib
+import os.path
 from gi.repository import GdkPixbuf
 import threading
 from settings import sopranoGlobals
@@ -18,20 +20,19 @@ class getCover(threading.Thread):
 		socket.setdefaulttimeout(1)
 		try:
 			url = 'http://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key=%s&artist=%s&album=%s' % (LASTFM_API_KEY, artist, album)
-			request = urllib2.Request(url, headers = {'User-Agent': USERAGENT})
-			stream = urllib2.urlopen(request)
-			data = stream.read()			
+			request = urllib.Request(url, headers = {'User-Agent': USERAGENT})
+			stream = urllib.urlopen(request)
+			data = stream.read().decode("utf8")
 		except:
 			return False
-
 		startIdx  = data.find('<image size="large">')
 		endIdx    = data.find('</image>', startIdx)
 		if startIdx != -1 and endIdx != -1:
 		    coverURL    = data[startIdx+len('<image size="large">'):endIdx]
 
 		try:
-			request = urllib2.Request(coverURL, headers = {'User-Agent': USERAGENT})
-			stream  = urllib2.urlopen(request, None, 50)
+			request = urllib.Request(coverURL, headers = {'User-Agent': USERAGENT})
+			stream  = urllib.urlopen(request, None, 50)
 			data    = stream.read()
 			output = open(sopranoGlobals.CACHEFILE, 'wb')
 			output.write(data)

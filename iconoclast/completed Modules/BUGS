@@ -1,6 +1,9 @@
-on load the playmark exists if theres stuff to load
-Folders with identical names will break the combo box
-add radio station dialog sometimes fails with "AttributeError: IconoRadio instance has no attribute 'editPref'"
+if no cover art found then sound menu will continue to use last found, such as in net radio
+
+##FIXED##
+Folders with identical names will break the combo box -- fixed by disallowing identical names in add folder window
+add radio station dialog sometimes fails with "AttributeError: IconoRadio instance has no attribute 'editPref'" -- seems fixed now.
+on load the playmark exists if theres stuff to load, but pressing play starts at the beginning
 
 ##Not Bugs Below just Notes##
 

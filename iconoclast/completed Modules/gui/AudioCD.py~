@@ -1,10 +1,11 @@
 from gi.repository import Gtk, GObject, GdkPixbuf, Gdk
 from settings import sopranoGlobals
+import os.path
 
 class IconoAudioCD():
 	def __init__(self, device='/dev/sr0'):
 		#sopranoGlobals.TRACKPB = Gtk.IconTheme.get_default().load_icon('media-cdrom-audio', 16, Gtk.IconLookupFlags.FORCE_SIZE)
-		self.device = device
+		self.device = "/dev/cdrom" if os.path.exists("/dev/cdrom") else "/dev/sr0"
 		self.sw = Gtk.ScrolledWindow()	
 
 		parents = {}
@@ -76,7 +77,7 @@ class IconoAudioCD():
 			tempiter = treeview.get_model().append(None, track)
 
 	def getCDTracks(self, device):
-		import cdrom
+		from music import cdrom
 		try: 
 			if device:
 				device = cdrom.open(device)
@@ -114,11 +115,11 @@ class IconoAudioCD():
 		return self.sw
 
 #debug and testing stuff
-treefile = IconoAudioCD('/dev/sr0')
+"""treefile = IconoAudioCD('/dev/sr0')
 window = Gtk.Window()
 window.add(treefile.get_sw())
 
 window.set_size_request(200, 500)
 window.connect("delete_event", Gtk.main_quit)
 window.show_all()	
-Gtk.main()
+Gtk.main()"""

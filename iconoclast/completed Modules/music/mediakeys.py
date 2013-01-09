@@ -1,6 +1,6 @@
 #jimjamjihah i love you!
 from gi.repository import GObject
-import dbus, sys
+import dbus#, sys
 from dbus.mainloop.glib import DBusGMainLoop
 
 class mediakeys(object):
@@ -34,7 +34,7 @@ class mediakeys(object):
 		self.bus_object.connect_to_signal('MediaPlayerKeyPressed', self.handle_mediakeys)
         
 	def handle_mediakeys(self, caller, command):
-		print command
+		print(command)
 		if command == 'Previous':
 			self.prevfunc()
 		elif command == 'Play':

@@ -82,7 +82,7 @@
                     <property name="can_focus">False</property>
                     <child>
                       <object class="GtkImageMenuItem" id="menu-folderadd">
-                        <property name="label">Manage Folders</property>
+                        <property name="label">Preferences</property>
                         <property name="can_focus">False</property>
                         <property name="tooltip_text" translatable="yes">Add a New Base Folder</property>
                         <property name="image">image5</property>
@@ -707,9 +707,11 @@ audio-volume-medium</property>
               </packing>
             </child>
             <child>
-              <object class="GtkToolbar" id="toolbar1">
+              <object class="GtkStatusbar" id="statusbar">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="orientation">vertical</property>
+                <property name="spacing">2</property>
               </object>
               <packing>
                 <property name="expand">False</property>

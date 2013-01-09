@@ -1,12 +1,21 @@
 from gi.repository import Gtk, GdkPixbuf
-import PrefWin
+from gui import PrefWin
 from settings import settings
 from settings import sopranoGlobals
-import os
+import os.path
 
 class SopranoPrefWin:
-	def __init__(self):
+	def __init__(self, showtray):
 		self.audioFolderlist = settings.IconoPrefs(sopranoGlobals.EXPLORER_DATA)
+		
+		page1, traycheckbox = self.create_page1(showtray)
+
+		self.win = PrefWin.PrefWin()
+		self.win.traycheckbox = traycheckbox
+		self.win.change = 0
+		self.win.create_category("Desktop", "folder", page1)
+
+	def create_page1(self, showtray):
 		#Page 1
 		vbox = Gtk.VBox()
 		#Line 1
@@ -26,7 +35,7 @@ class SopranoPrefWin:
 		self.tree.set_headers_visible(False)
 		self.tree.append_column(column)
 
-		for key, value in self.audioFolderlist.get_radioStations().iteritems():
+		for key, value in self.audioFolderlist.get_radioStations().items():
 			categorys.append([key, sopranoGlobals.FOLDERPB, value])	
 		#Line 2
 		line3HBox = Gtk.HBox()
@@ -36,21 +45,26 @@ class SopranoPrefWin:
 		line3Button2 = Gtk.Button()
 		line3Button2.set_label("Remove Folder")
 		line3Button2.connect('clicked',self.removeFolder)
-		line3HBox.pack_start(line3Button1, True, True, 0)
-		line3HBox.pack_start(line3Button2, True, True, 0)
+		line3HBox.pack_start(line3Button1, True, True, 4)
+		line3HBox.pack_start(line3Button2, True, True, 4)
+		#Seperator
+		separator1 = Gtk.Separator()
 		#Line 3
 		hbox = Gtk.HBox()
 		alabel = Gtk.Label("Show Tray Icon")
-		traycheckbox = Gtk.CheckButton()
+		traycheckbox = Gtk.Switch()
+		traycheckbox.set_active(showtray)
 		hbox.pack_start(alabel, True, False, 0)
 		hbox.pack_end(traycheckbox, True, False, 0)
 		#Packing
 		vbox.pack_start(self.tree, True, True, 0)
-		vbox.pack_start(line3HBox, False, True, 0)
+		vbox.pack_start(line3HBox, False, True, 5)
+		vbox.pack_start(separator1, False, True, 5)
 		vbox.pack_start(hbox, False, True, 0)
-	
-		self.win = PrefWin.PrefWin()
-		self.win.create_category("Desktop", "folder", vbox)
+		return vbox, traycheckbox
+
+	def get_change_value(self):
+		return self.win.change
 
 	def addFolderDialog(self, widget=None):
 		dialog = Gtk.Dialog(' ',
@@ -108,6 +122,8 @@ class SopranoPrefWin:
 					self.tree.get_model().append([station[0],sopranoGlobals.FOLDERPB,station[1]])
 					self.audioFolderlist.add_radio(station)
 					dialog.destroy()
+					self.win.change = self.win.change + 1
+					print(self.win.change)
 					break
 			else:				
 				dialog.destroy()
@@ -117,5 +133,12 @@ class SopranoPrefWin:
 		if selected:
 			self.audioFolderlist.delete_radio([model.get_value(selected, 0)])
 			model.remove(selected)
+			self.win.change = self.win.change - 1
+			print(self.win.change)
 
-
+"""def main():
+	win = SopranoPrefWin(True)
+	win.win.connect("delete_event", Gtk.main_quit)
+	if __name__ == '__main__':
+		Gtk.main()
+main()"""

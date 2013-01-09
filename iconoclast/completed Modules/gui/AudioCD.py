@@ -1,10 +1,11 @@
 from gi.repository import Gtk, GObject, GdkPixbuf, Gdk
 from settings import sopranoGlobals
+import os.path
 
 class IconoAudioCD():
 	def __init__(self, device='/dev/sr0'):
 		#sopranoGlobals.TRACKPB = Gtk.IconTheme.get_default().load_icon('media-cdrom-audio', 16, Gtk.IconLookupFlags.FORCE_SIZE)
-		self.device = device
+		self.device = "/dev/cdrom" if os.path.exists("/dev/cdrom") else "/dev/sr0"
 		self.sw = Gtk.ScrolledWindow()	
 
 		parents = {}

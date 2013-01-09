@@ -9,8 +9,8 @@ class IconoTray:
 		except: APPIND_SUPPORT = 0
 
 		if APPIND_SUPPORT == 1:
-			self.ind = AppIndicator3.Indicator.new("Soprano", iconname, AppIndicator3.IndicatorCategory.APPLICATION_STATUS)
-			self.ind.set_status (AppIndicator3.IndicatorStatus.ACTIVE)
+			self.ind = AppIndicator3.Indicator.new("Soprano2", iconname, AppIndicator3.IndicatorCategory.APPLICATION_STATUS)
+			self.ind.set_status(AppIndicator3.IndicatorStatus.ACTIVE)
 			self.ind.set_menu(self.menu)
 		else:
 			self.myStatusIcon = Gtk.StatusIcon()
@@ -42,11 +42,19 @@ class IconoTray:
 		self.menu.popup(None, None, pos, icon, button, time)
 
 #test/debug stuff below here
-"""def main(iconoclast=None):
+"""import time
+def killthingy(app):
+	print("killthingy run")
+	app = None
+	time.sleep(4)
+	app = IconoTray("rhythmbox")
+	app.add_menu_item(lambda x: Gtk.main_quit(), "Quit")
+
+def main(iconoclast=None):
 	app = IconoTray("rhythmbox")
 	app.add_menu_item(lambda x: Gtk.main_quit(), "Quit")
 	app.add_seperator()
-	app.add_menu_item(lambda x: Gtk.main_quit(), "Play")
+	app.add_menu_item(lambda x: killthingy(app), "Play")
 
 	if __name__ == '__main__':
 		Gtk.main()

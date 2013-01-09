@@ -1,4 +1,4 @@
-from gi.repository import Gtk, GObject, GdkPixbuf, Gdk
+from gi.repository import Gtk, GObject, GdkPixbuf, Gdk, TotemPlParser
 from settings import sopranoGlobals, settings
 
 class IconoRadio():
@@ -45,6 +45,8 @@ class IconoRadio():
 		self.treeview.connect("drag_begin", self.drag_begin_cb)
 		GObject.idle_add(self.setupStations, stations)
 
+		self.playlisturl = None
+
 	def on_right_click(self, widget, event):
 		if event.button == 3:
 			self.menu = Gtk.Menu()
@@ -82,7 +84,7 @@ class IconoRadio():
 
 	def setupStations(self, stations):
 		self.treeview.get_model().clear()
-		for key, value in stations.iteritems():
+		for key, value in stations.items():
 			self.addStation((key, value))
 
 	def addStation(self, station):
@@ -98,6 +100,23 @@ class IconoRadio():
 		if len(model) == 0:
 			self.treeview.hide()
 			self.emptybtn.show()
+
+	#unused atm###########
+	def playlist(self, url, seturl=False):
+		if seturl:
+			self.playlisturl = url
+		return self.playlisturl
+
+	def pl_entry(self, parser, url, htable):
+		try: print(htable['title'])
+		except:	print(htable['url'])
+		self.playlist(htable['url'], True)
+
+	def parse_url(self, url):
+		parser = TotemPlParser.Parser.new()
+		parser.connect('entry-parsed', self.pl_entry)
+		res = parser.parse(url, False)
+	#######################
 
 	def addStationDialog(self, widget=None):
 		dialog = Gtk.Dialog(' ',
@@ -143,16 +162,23 @@ class IconoRadio():
 		label.set_mnemonic_widget(local_entry2);
 	  
 		vbox.show_all();
-		
+		"""http://www.hardradio.com/streaming/aac.m3u
+		http://66.90.91.59:80/hardradio2.aac"""
 		while True:
 			response = dialog.run()
 			if response == Gtk.ResponseType.OK:
-				station = (local_entry1.get_text(), local_entry2.get_text())
-				if station[1][:7] != 'http://' and station[1][:6] != 'mms://':
+				station = [local_entry1.get_text(), local_entry2.get_text()]
+				self.parse_url(station[1])
+				#print self.playlisturl
+				if (station[1][:7] != 'http://' and station[1][:6] != 'mms://') and self.playlisturl == None:
 					warnlabel.set_markup("<b>Not a Supported Uri</b>")
 				elif station[0] in self.editPref.get_radioStations().keys():
 					warnlabel.set_markup("<b>Radio name already exists</b>")
+				elif station[1] in self.editPref.get_radioStations().values() or self.playlisturl in self.editPref.get_radioStations().values():
+					warnlabel.set_markup("<b>Radio Station url already exists</b>")
 				else:
+					if self.playlisturl != None:
+						station[1] = self.playlisturl
 					self.addStation(station)
 					self.editPref.add_radio(station)
 					self.treeview.show()
@@ -166,8 +192,8 @@ class IconoRadio():
 	def get_sw(self):
 		return self.sw
 
-#debug and testing stuff
-"""treefile = IconoRadio()
+"""#debug and testing stuff
+treefile = IconoRadio()
 window = Gtk.Window()
 window.add(treefile.get_sw())
 

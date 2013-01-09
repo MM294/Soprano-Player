@@ -1,2 +1,2 @@
-cd /home/mike/Desktop/Python/IconoClast/iconoclast/completed\ Modules/
+cd /media/Media/Backup/Linux/Home\ Folder/Desktop/Python/IconoClast/iconoclast/completed\ Modules
 python SopranoApp.py

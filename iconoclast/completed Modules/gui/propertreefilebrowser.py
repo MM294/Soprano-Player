@@ -114,11 +114,11 @@ class IconoTreeFile():
 		directories = []
 
 		for (file, path) in self.listDir(directory, False):
-		    if os.path.isdir(path):
-		        directories.append((sopranoGlobals.FOLDERPB, file, 1, path))
-		    elif os.path.isfile(path):
-			if os.path.splitext(file.lower())[1] in self.fileFormats:
-		            mediaFiles.append((sopranoGlobals.FILEPB, file, 0, path))                
+			if os.path.isdir(path):
+				directories.append((sopranoGlobals.FOLDERPB, file, 1, path))
+			elif os.path.isfile(path):
+				if os.path.splitext(file.lower())[1] in self.fileFormats:
+					mediaFiles.append((sopranoGlobals.FILEPB, file, 0, path))                
 
 		mediaFiles.sort()
 		directories.sort()
@@ -127,10 +127,10 @@ class IconoTreeFile():
 
 	def listDir(self, directory, listHiddenFiles=False):
 
-	    if os.access(directory, os.R_OK | os.X_OK): list = os.listdir(directory)
-	    else:                                       list = []
+		if os.access(directory, os.R_OK | os.X_OK): list = os.listdir(directory)
+		else:                                       list = []
 
-	    return [(filename, os.path.join(directory, filename)) for filename in list if listHiddenFiles or filename[0] != '.']
+		return [(filename, os.path.join(directory, filename)) for filename in list if listHiddenFiles or filename[0] != '.']
 
 	def get_sw(self):
 		return self.sw

@@ -1,5 +1,7 @@
-from gi.repository import Gtk, GdkPixbuf, GObject# about 8.5 Mb memory used here
-import gst, os#gst uses 4.5 Mb of memory alone
+import gi
+gi.require_version('Gst', '1.0')
+from gi.repository import Gtk, GdkPixbuf, GObject, AppIndicator3, Notify, Gst# about 8.5 Mb memory used here
+import os.path#, gst #gst uses 4.5 Mb of memory alone
 
 from settings import settings
 from settings import sopranoGlobals
@@ -7,7 +9,8 @@ from settings import sopranoGlobals
 from music.mediakeys import mediakeys
 from music.tagreading import TrackMetaData
 from music.cdcover import getCover # 10.6 Mb of Memory
-from music.gstreamerplayer import MusicPlayer
+from music.gstreamerplayerGOBJECT import MusicPlayer
+from music.mpris import SoundMenuControls
 
 from gui.combobox import HeaderedComboBox
 from gui.aboutbox import aboutBoxShow
@@ -16,6 +19,7 @@ from gui.AudioCD import IconoAudioCD # 14.3mb of Memory
 from gui.NetRadio import IconoRadio
 from gui.liststore import IconoListView # about 11.2mb of memory
 from gui.prefs import SopranoPrefWin
+from gui.trayicon import IconoTray
 
 class SopranoApp:
 	def __init__(self):
@@ -23,11 +27,23 @@ class SopranoApp:
 		self.settings = settings.IconoSettings(sopranoGlobals.SETTINGS_DATA)
 		self.taglookup = TrackMetaData()
 		self.seekingnow = False		
-		#preferences
-		self.trayicon = True
 		#load settings
-		self.currentview, self.winwidth, self.winheight, self.defaultexplorer, self.shuffle, self.repeat = self.settings.get_settings()
+		self.currentview, self.winwidth, self.winheight, self.defaultexplorer, self.shuffle, self.repeat, self.showtrayicon = self.settings.get_settings()
 		
+		#turn on the dbus mainloop for sound menu
+		from dbus.mainloop.glib import DBusGMainLoop
+		DBusGMainLoop(set_as_default=True)
+		#Start Sound Menu Support
+		self.sopranompris = SoundMenuControls("soprano-player")
+		self.sopranompris.signal_next = self.play_next
+		self.sopranompris.signal_prev = self.play_prev
+		self.sopranompris.signal_play_pause = self.play_pause
+		self.sopranompris.signal_raise = self.toggle_window
+
+		#Enable Notifications
+		Notify.init ("Soprano")
+		self.notification = Notify.Notification.new("","","")
+
 		#Window Creation
 		self.builder = Gtk.Builder()
 		filename = os.path.join('data', 'MainWindow.glade')
@@ -49,18 +65,18 @@ class SopranoApp:
 
 		timer = GObject.timeout_add(500, self.update_time_items)
 
-		if self.trayicon:
-			#trayicon
-			from gui.trayicon import IconoTray
-			self.tray = IconoTray("rhythmbox")
-			#self.tray = IconoTray("soprano-player-tray")
-			self.tray.add_menu_item(self.toggle_window, "Show")
-			self.tray.add_seperator()
-			self.tray.add_menu_item(self.play_pause, "Play")
-			self.tray.add_menu_item(self.play_next, "Next")
-			self.tray.add_menu_item(self.play_prev, "Previous")
-			self.tray.add_seperator()
-			self.tray.add_menu_item(self.on_exit, "Quit")
+		#trayicon
+		#self.tray = IconoTray("rhythmbox")
+		self.tray = IconoTray("soprano-player-tray") #using rhythmbox icon since most themes have one
+		self.tray.add_menu_item(self.toggle_window, "Show")
+		self.tray.add_seperator()
+		self.tray.add_menu_item(self.play_pause, "Play")
+		self.tray.add_menu_item(self.play_next, "Next")
+		self.tray.add_menu_item(self.play_prev, "Previous")
+		self.tray.add_seperator()
+		self.tray.add_menu_item(self.on_exit, "Quit")
+		self.update_tray_icon(self.showtrayicon)
+
 
 		#View Menu#
 		menuvfull = self.builder.get_object('menu-mode-full')
@@ -153,19 +169,34 @@ class SopranoApp:
 		#Notebook
 		self.notebook = self.builder.get_object('notebook-explorer')
 
+	def update_tray_icon(self, enabled=True):
+		if enabled:
+			try:	self.tray.myStatusIcon.set_visible(True)
+			except: self.tray.ind.set_status(AppIndicator3.IndicatorStatus.ACTIVE)
+		elif not enabled:
+			try:	self.tray.myStatusIcon.set_visible(False)
+			except: self.tray.ind.set_status(AppIndicator3.IndicatorStatus.PASSIVE)
+			
+
 	def show_pref_win(self, widget=None):
-		newWin = SopranoPrefWin()
+		newWin = SopranoPrefWin(self.showtrayicon)
+		newWin.win.set_transient_for(self.window)
 		newWin.win.show_all()
-		newWin.win.connect("destroy", pref_win_closed)
+		newWin.win.connect("destroy", self.pref_win_closed)
 
-	def pref_win_closed(self, widget=None):
-		self.clear_notebook
-		self.setup_explorer
-		self.notebook.set_current_page(self.defaultexplorer)
-		self.hCombo.set_active(self.defaultexplorer)
 
-	def toggle_window(self, trayicon):
-		if self.window.get_property("visible"):
+	def pref_win_closed(self, widget):
+		currentpage = self.notebook.get_current_page()
+		currentactive = self.hCombo.get_active()
+		self.clear_notebook()
+		self.setup_explorer()
+		self.notebook.set_current_page(currentpage + widget.change)
+		self.hCombo.set_active(currentactive + widget.change)
+		self.showtrayicon = widget.traycheckbox.get_active()
+		self.update_tray_icon(self.showtrayicon)
+
+	def toggle_window(self, justShow=True):
+		if self.window.get_property("visible") and not justShow == True:
 			self.window.hide()
 		else:
 			self.window.show()
@@ -181,7 +212,7 @@ class SopranoApp:
 		else:
 			winheight = self.winheight
 			winwidth = self.winwidth
-		self.settings.write_settings([self.currentview, winwidth, winheight ,self.notebook.get_current_page()+1, self.shuffle, self.repeat])
+		self.settings.write_settings([self.currentview, winwidth, winheight ,self.notebook.get_current_page()+1, self.shuffle, self.repeat, self.showtrayicon])
 		self.iconoListView.save_shelf(sopranoGlobals.TREE_DATA)
 		Gtk.main_quit()
 
@@ -198,7 +229,7 @@ class SopranoApp:
 			model.set_value(iter, 0, length-(1+i))
 
 	def clear_notebook(self, widget=None):
-		for i in xrange(self.notebook.get_n_pages(), 0, -1):
+		for i in range(self.notebook.get_n_pages(), 0, -1):
 			self.notebook.remove_page(i-1)
 		self.hCombo.get_model().clear()
 
@@ -217,7 +248,7 @@ class SopranoApp:
 		self.setup_explorer_page(self.notebook, explorer.get_sw(), self.hCombo, [self.notebook.get_n_pages(), 0, "Root", sopranoGlobals.FOLDERPB])
 
 		audioFolderlist = settings.IconoPrefs(sopranoGlobals.EXPLORER_DATA)
-		for key, value in audioFolderlist.get_radioStations().iteritems():
+		for key, value in audioFolderlist.get_radioStations().items():
 			explorer = IconoTreeFile(value, sopranoGlobals.FILE_FORMATS)	
 			self.setup_explorer_page(self.notebook, explorer.get_sw(), self.hCombo, [self.notebook.get_n_pages(), 0, key, sopranoGlobals.FOLDERPB])
 		aCdTree = IconoAudioCD()
@@ -249,26 +280,6 @@ class SopranoApp:
 		text = model[row][7]
 		GObject.idle_add(self.playitem, text)
 		self.iconoListView.set_playmark(row)
-
-	"""def remove_rows(self, widget, treeview):
-		model, selected = treeview.get_selection().get_selected_rows()
-		for i in reversed(selected):
-			tempiter = model.get_iter(i)
-			if model.get_value(tempiter, 0) == 'media-playback-start':
-				GObject.idle_add(self.stop_play)
-			model.remove(tempiter)
-
-	def on_right_click(self, widget, event):
-		if event.button == 3:
-			self.menu = Gtk.Menu()
-			aMenuitem = Gtk.MenuItem()
-			aMenuitem.set_label("Remove")
-			aMenuitem.connect("activate", self.remove_rows, widget)
-
-			self.menu.append(aMenuitem)
-			self.menu.show_all()
-			self.menu.popup( None, None, None, None, event.button, event.time)
-			return True"""
 
 	#View Menu Handlers
 	def to_full_mode(self, unused=None):
@@ -306,7 +317,7 @@ class SopranoApp:
 
 	#Data Display Handlers
 	def update_time_items(self):
-		if (self.player.get_state() == gst.STATE_PLAYING):
+		if (self.player.get_state() == Gst.State.PLAYING):
 			if not(self.seekingnow):
 				self.toolSeekBar.set_value(self.player.track_percent())
 			self.elapsedLabel.set_text(self.player.get_trackposition())
@@ -327,9 +338,9 @@ class SopranoApp:
 		filepath = self.player.get_track()
 		if filepath != None:
 			data = self.taglookup.getTrackType(filepath)
-		try: artist = data[2].replace(' ','%20')
+		try: artist = data[3].replace(' ','%20')
 		except: artist = ""
-		try: album = data[3].replace(' ','%20')
+		try: album = data[4].replace(' ','%20')
 		except: album = ""
 
 		coverFetch = getCover(artist, album, filepath)
@@ -352,7 +363,7 @@ class SopranoApp:
 		self.player.change_volume(volume)
 
 	def play_prev(self, widget=None):
-		for x in xrange(1,len(self.iconoListView.return_model())):
+		for x in range(1,len(self.iconoListView.return_model())):
 			if self.iconoListView.return_model()[x][0] == 'media-playback-start':
 				GObject.idle_add(self.playitem, self.iconoListView.return_model()[x-1][7])
 				self.iconoListView.set_playmark(x-1)
@@ -367,7 +378,7 @@ class SopranoApp:
 			self.iconoListView.get_sw().get_child().scroll_to_cell(arand)
 			GObject.idle_add(self.playitem, self.iconoListView.return_model()[arand][7])
 			return
-		for x in xrange(0, listlength):
+		for x in range(0, listlength):
 			#if there on the last track, and they press next without repeat enabled, do nothing
 			if x == listlength-1 and not(self.repeat) and widget == self.toolnext:
 				break
@@ -392,14 +403,25 @@ class SopranoApp:
 		self.player.stop_play()
 		self.player.set_track(filepath)
 		self.player.play_item()
-
 		data = self.taglookup.getTrackType(filepath)
-		self.update_labels(str(data[1]), str(data[2]), str(data[3]))
+		print(data)
+		if data != False:
+			self.update_labels(str(data[2]), str(data[3]), str(data[4]))
 
-		self.toolSeekBar.set_sensitive(True)
-		toolplayimg = self.builder.get_object('image3')
-		toolplayimg.set_from_icon_name('media-playback-pause', Gtk.IconSize.LARGE_TOOLBAR)
-		GObject.idle_add(self.cover_update)
+			#Notifications
+			self.notification.update (str(data[2]), str(data[3]), "media-playback-start")
+			self.notification.show()
+			#set Sound Menu Data
+			self.sopranompris.set_metadata(str(data[2]), str(data[3]), str(data[4]), "file://" + sopranoGlobals.CACHEFILE)
+			self.sopranompris.signal_playing()
+
+			self.toolSeekBar.set_sensitive(True)
+			toolplayimg = self.builder.get_object('image3')
+			toolplayimg.set_from_icon_name('media-playback-pause', Gtk.IconSize.LARGE_TOOLBAR)
+			GObject.idle_add(self.cover_update)
+		else:
+			self.clear_labels()
+			self.play_next()
 
 	def stop_play(self, *args):
 		self.player.stop_play()
@@ -412,21 +434,25 @@ class SopranoApp:
 		GObject.idle_add(self.cover_update)
 
 	def play_pause(self, filepath=None):
+		#print(self.player.get_state())
 		toolplayimg = self.builder.get_object('image3')
-		if (self.player.get_state() == gst.STATE_PLAYING):
-			if self.player.get_player().get_property("uri")[:7] == 'http://' or self.player.get_player().get_property("uri")[:6] == 'mms://':
+		if (self.player.get_state() == Gst.State.PLAYING):
+			if self.player.get_track()[:7] == 'http://' or self.player.get_track()[:6] == 'mms://':
 				self.player.stop_play()
-				print("Radio")
+				print("Radio Stop")
 			else:
 				self.player.pause_item()
 			toolplayimg.set_from_icon_name('media-playback-start', Gtk.IconSize.LARGE_TOOLBAR)			
-		elif (self.player.get_state() == gst.STATE_PAUSED):
+		elif (self.player.get_state() == Gst.State.PAUSED):
 			self.player.play_item()
 			toolplayimg.set_from_icon_name('media-playback-pause', Gtk.IconSize.LARGE_TOOLBAR)
 		else:#if os.path.isfile(filepath):
 			selected = self.iconoListView.get_sw().get_child().get_selection()
 			if selected.get_selected_rows()[1] != []:
 				modeliter = self.iconoListView.return_model().get_iter(selected.get_selected_rows()[1][0])
+			elif self.player.get_state() == Gst.State.NULL and self.iconoListView.get_playmark() != None:
+				modelrow = self.iconoListView.get_playmark()
+				modeliter = self.iconoListView.return_model().get_iter(modelrow)
 			elif self.iconoListView.return_model().get_iter_first() != None:
 				modeliter = self.iconoListView.return_model().get_iter_first()
 

@@ -25,9 +25,8 @@ class PrefWin(Gtk.Window):
 		self.tree = Gtk.TreeView(self.categorys)
 		self.tree.set_headers_visible(False)
 		self.tree.append_column(column)
-
-		self.tree.get_selection().connect('changed', self.on_activated)		
-
+		self.tree.get_selection().connect('changed', self.on_activated)
+		
 		#create notebook
 		self.notebook = Gtk.Notebook()
 		self.notebook.set_show_tabs(False)	
@@ -38,7 +37,11 @@ class PrefWin(Gtk.Window):
 		self.pane.pack2(self.notebook, shrink=False)
 		self.pane.set_position(100)
 
-		self.add(self.pane)
+		#Padding container
+		paddingbox = Gtk.Box()
+		paddingbox.pack_start(self.pane, expand=True, fill=True, padding=5)
+
+		self.add(paddingbox)
 		self.show_all()
 
 	def create_category(self, name, icon, widgetpage):
@@ -46,7 +49,7 @@ class PrefWin(Gtk.Window):
 		for i in range(0, len(self.categorylist)):
 			#print str(self.categorylist[i])
 			if  self.categorylist[i] == name:
-				print "oh shit already a category called this!"
+				print("oh shit already a category called this!")
 				exists = 1
 		if exists == 0:
 			pic = Gtk.IconTheme.get_default().load_icon(icon, 32, Gtk.IconLookupFlags.FORCE_SIZE)
@@ -66,8 +69,8 @@ class PrefWin(Gtk.Window):
 	abox = Gtk.Box()
 	alabel = Gtk.Label("First Option!")
 	acheckbox = Gtk.Switch()
-	abox.add(alabel)
-	abox.add(acheckbox)
+	abox.pack_start(alabel, expand=True, fill=True, padding=5)
+	abox.pack_start(acheckbox, expand=True, fill=True, padding=5)
 
 	abox2 = Gtk.Box()
 	alabel2 = Gtk.Label("Second Option!")
@@ -76,6 +79,7 @@ class PrefWin(Gtk.Window):
 	abox2.add(acheckbox2)
 	
 	win = PrefWin()
+	win.connect("delete_event", Gtk.main_quit)
 	win.create_category("Desktop", "folder", abox)
 	win.create_category("Network", "network", abox2)
 	if __name__ == '__main__':
