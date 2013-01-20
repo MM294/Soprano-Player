@@ -16,7 +16,7 @@ class IconoSettings:
 		if os.path.exists(self.path):
 			settings = pickle.load( open(self.path, "rb" ) )
 		else:
-			settings = ['full', 900, 550, 2, False, False, True]
+			settings = ['full', 900, 550, 2, False, False, True, False]
 		return settings
 
 class IconoPrefs(object):

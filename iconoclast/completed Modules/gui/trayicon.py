@@ -24,6 +24,7 @@ class IconoTray:
 
 		self.menu.append(aMenuitem)
 		self.menu.show_all()
+		return aMenuitem
 
 	def add_seperator(self):
 		aMenuitem = Gtk.SeparatorMenuItem()

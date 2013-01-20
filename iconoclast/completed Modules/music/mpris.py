@@ -42,6 +42,7 @@ class SoundMenuControls(dbus.service.Object):
 
 	@dbus.service.method(dbus.PROPERTIES_IFACE, in_signature='ss', out_signature='v')
 	def Get(self, interface, prop):
+		#print(prop)
 		my_prop = self.__getattribute__(prop)
 		return my_prop
 

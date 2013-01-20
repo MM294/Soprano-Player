@@ -28,7 +28,7 @@ class SopranoApp:
 		self.taglookup = TrackMetaData()
 		self.seekingnow = False		
 		#load settings
-		self.currentview, self.winwidth, self.winheight, self.defaultexplorer, self.shuffle, self.repeat, self.showtrayicon = self.settings.get_settings()
+		self.currentview, self.winwidth, self.winheight, self.defaultexplorer, self.shuffle, self.repeat, self.showtrayicon, self.closetotray = self.settings.get_settings()
 		
 		#turn on the dbus mainloop for sound menu
 		from dbus.mainloop.glib import DBusGMainLoop
@@ -52,7 +52,7 @@ class SopranoApp:
 
 		self.window = self.builder.get_object('win-main')
 		self.window.set_default_size(self.winwidth,self.winheight)
-		self.window.connect('destroy', self.on_exit)
+		self.window.connect('delete-event', self.pre_exit)
 		
 		#radiowindow
 		self.aRadio = IconoRadio()
@@ -68,9 +68,9 @@ class SopranoApp:
 		#trayicon
 		#self.tray = IconoTray("rhythmbox")
 		self.tray = IconoTray("soprano-player-tray") #using rhythmbox icon since most themes have one
-		self.tray.add_menu_item(self.toggle_window, "Show")
+		self.trayshowhide = self.tray.add_menu_item(self.toggle_window, "Hide")
 		self.tray.add_seperator()
-		self.tray.add_menu_item(self.play_pause, "Play")
+		self.trayplaypause = self.tray.add_menu_item(self.play_pause, "Play")
 		self.tray.add_menu_item(self.play_next, "Next")
 		self.tray.add_menu_item(self.play_prev, "Previous")
 		self.tray.add_seperator()
@@ -179,7 +179,7 @@ class SopranoApp:
 			
 
 	def show_pref_win(self, widget=None):
-		newWin = SopranoPrefWin(self.showtrayicon)
+		newWin = SopranoPrefWin(self.showtrayicon, self.closetotray)
 		newWin.win.set_transient_for(self.window)
 		newWin.win.show_all()
 		newWin.win.connect("destroy", self.pref_win_closed)
@@ -193,13 +193,26 @@ class SopranoApp:
 		self.notebook.set_current_page(currentpage + widget.change)
 		self.hCombo.set_active(currentactive + widget.change)
 		self.showtrayicon = widget.traycheckbox.get_active()
+		if self.showtrayicon:
+			self.closetotray = widget.closecheckbox.get_active()
+		else:
+			self.closetotray = False
 		self.update_tray_icon(self.showtrayicon)
 
 	def toggle_window(self, justShow=True):
 		if self.window.get_property("visible") and not justShow == True:
 			self.window.hide()
+			self.trayshowhide.set_label("Show")
 		else:
 			self.window.show()
+			self.trayshowhide.set_label("Hide")
+
+	def pre_exit(self, widget, var):
+		if widget == self.window and self.closetotray:
+			self.window.hide()
+			return True
+		else:
+			self.on_exit(widget)
 
 	def on_exit(self, widget):
 		#hide window and tray icon first to give appearence of instant close
@@ -212,7 +225,7 @@ class SopranoApp:
 		else:
 			winheight = self.winheight
 			winwidth = self.winwidth
-		self.settings.write_settings([self.currentview, winwidth, winheight ,self.notebook.get_current_page()+1, self.shuffle, self.repeat, self.showtrayicon])
+		self.settings.write_settings([self.currentview, winwidth, winheight ,self.notebook.get_current_page()+1, self.shuffle, self.repeat, self.showtrayicon, self.closetotray])
 		self.iconoListView.save_shelf(sopranoGlobals.TREE_DATA)
 		Gtk.main_quit()
 
@@ -442,10 +455,12 @@ class SopranoApp:
 				print("Radio Stop")
 			else:
 				self.player.pause_item()
-			toolplayimg.set_from_icon_name('media-playback-start', Gtk.IconSize.LARGE_TOOLBAR)			
+			toolplayimg.set_from_icon_name('media-playback-start', Gtk.IconSize.LARGE_TOOLBAR)
+			self.trayplaypause.set_label("Play")			
 		elif (self.player.get_state() == Gst.State.PAUSED):
 			self.player.play_item()
 			toolplayimg.set_from_icon_name('media-playback-pause', Gtk.IconSize.LARGE_TOOLBAR)
+			self.trayplaypause.set_label("Pause")			
 		else:#if os.path.isfile(filepath):
 			selected = self.iconoListView.get_sw().get_child().get_selection()
 			if selected.get_selected_rows()[1] != []:
@@ -458,7 +473,7 @@ class SopranoApp:
 
 			try: filepath = self.iconoListView.return_model().get_value(modeliter, 7)
 			except: return
-
+			self.trayplaypause.set_label("Pause")			
 			GObject.idle_add(self.playitem, filepath)
 			self.iconoListView.set_playmark(modeliter)
 			toolplayimg.set_from_icon_name('media-playback-pause', Gtk.IconSize.LARGE_TOOLBAR)

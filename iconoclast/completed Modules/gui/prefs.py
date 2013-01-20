@@ -5,17 +5,18 @@ from settings import sopranoGlobals
 import os.path
 
 class SopranoPrefWin:
-	def __init__(self, showtray):
+	def __init__(self, showtray, closeon):
 		self.audioFolderlist = settings.IconoPrefs(sopranoGlobals.EXPLORER_DATA)
 		
-		page1, traycheckbox = self.create_page1(showtray)
+		page1, traycheckbox, closecheckbox = self.create_page1(showtray, closeon)
 
 		self.win = PrefWin.PrefWin()
 		self.win.traycheckbox = traycheckbox
+		self.win.closecheckbox = closecheckbox
 		self.win.change = 0
 		self.win.create_category("Desktop", "folder", page1)
 
-	def create_page1(self, showtray):
+	def create_page1(self, showtray, closeon):
 		#Page 1
 		vbox = Gtk.VBox()
 		#Line 1
@@ -56,12 +57,20 @@ class SopranoPrefWin:
 		traycheckbox.set_active(showtray)
 		hbox.pack_start(alabel, True, False, 0)
 		hbox.pack_end(traycheckbox, True, False, 0)
+		#Line 4
+		hbox2 = Gtk.HBox()
+		alabel2 = Gtk.Label("Close to Tray")
+		closecheckbox = Gtk.Switch()
+		closecheckbox.set_active(closeon)
+		hbox2.pack_start(alabel2, True, False, 0)
+		hbox2.pack_end(closecheckbox, True, False, 0)
 		#Packing
 		vbox.pack_start(self.tree, True, True, 0)
 		vbox.pack_start(line3HBox, False, True, 5)
 		vbox.pack_start(separator1, False, True, 5)
 		vbox.pack_start(hbox, False, True, 0)
-		return vbox, traycheckbox
+		vbox.pack_start(hbox2, False, True, 0)
+		return vbox, traycheckbox, closecheckbox
 
 	def get_change_value(self):
 		return self.win.change

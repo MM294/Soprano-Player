@@ -5,6 +5,8 @@ Folders with identical names will break the combo box -- fixed by disallowing id
 add radio station dialog sometimes fails with "AttributeError: IconoRadio instance has no attribute 'editPref'" -- seems fixed now.
 on load the playmark exists if theres stuff to load, but pressing play starts at the beginning
 
+
+
 ##Not Bugs Below just Notes##
 
 from gi.repository import Gtk

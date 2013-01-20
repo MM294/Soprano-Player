@@ -1,4 +1,4 @@
-if no cover art found then sound menu will continue to use last found
+if no cover art found then sound menu will continue to use last found, such as in net radio
 
 ##FIXED##
 Folders with identical names will break the combo box -- fixed by disallowing identical names in add folder window
