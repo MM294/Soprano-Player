@@ -1,0 +1,12 @@
+Package: soprano-player
+Priority: extra
+Section: Applications/Multimedia
+Installed-Size: 840
+Maintainer: root@mike-H55-UD3H
+Architecture: amd64
+Version: 0.02
+Depends: desktop-file-utils, libgtk-3-0, python, python-cddb, gir1.2-totem-plparser-1.0, python3-dbus, python-mutagen, gir1.2-gtk-3.0
+Provides:
+Description: An Music Player written in python gtk3 and cairo, 
+ This is an alpha release, report any issues at https://github.com/HairyPalms/Soprano-Player/issues
+

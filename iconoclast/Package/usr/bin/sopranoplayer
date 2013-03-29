@@ -1,0 +1,3 @@
+#!/bin/bash
+cd /usr/lib/soprano-player
+python SopranoApp.py

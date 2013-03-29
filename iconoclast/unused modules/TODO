@@ -1,0 +1,9 @@
+rewrite treefilebrowser (sort folders before directorys, filters for non-music, hide parent folder) (low priority)
+
+implement drag and drop for iconfilebrowser
+
+CoverArt
+
+sort out the farking listview to accept drags from nautilus properly
+
+Media Library

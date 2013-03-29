@@ -1,0 +1,13 @@
+[Desktop Entry]
+Name=Soprano
+GenericName=Music Player
+X-GNOME-FullName=Soprano Music Player
+Comment=Play and organize your music collection
+Exec=sopranoplayer %U
+Terminal=false
+Type=Application
+Icon=soprano-player
+Categories=GNOME;GTK;AudioVideo;
+MimeType=application/x-ogg;application/ogg;audio/x-vorbis+ogg;audio/x-scpls;audio/x-mp3;audio/x-mpeg;audio/mpeg;audio/x-mpegurl;audio/x-flac;
+Keywords=Mp3;Audio;CD;MTP;Podcast;DAAP;Playlist;Ipod;
+StartupNotify=true
