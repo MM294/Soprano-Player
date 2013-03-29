@@ -29,6 +29,9 @@ class IconoListView():
 		genreCol = builder.get_object('genreCol')
 		pathCol = builder.get_object('pathCol')
 
+		#need to figure a working sorting function
+		#self.abox.get_model().set_sort_func(1, self.tracknumsortfunc, None)
+
 		trackCol.set_sort_column_id(1)
 		titleCol.set_sort_column_id(2)
 		artistCol.set_sort_column_id(3)
@@ -51,6 +54,23 @@ class IconoListView():
 		self.abox.connect('button_release_event', self.on_button_release)
 		self.defer_select=False
 		self.sw.add(self.abox)
+
+	def tracknumsortfunc(self,model, row1, row2, user_data):
+		if (model.get_value(row1, 3) == model.get_value(row2, 3)) and (model.get_value(row1, 4) == model.get_value(row2, 4)):
+			#print("Same Band! and Same Album!")
+			#print(model.get_value(row1, 3), model.get_value(row1, 4))
+			#print cmp(model[row1][3], model[row2][3])
+			if (model.get_value(row1, 1) <= model.get_value(row2, 1)):
+				print("0")
+				return 0
+				#print(model.get_value(row1, 1))
+				#model.swap(row1, row2)
+			else:
+				print("-1")
+				return -1
+				#model.swap(row2, row1)
+		#else:
+			#print cmp(model[row1][3], model[row2][3])
 
 	def drag_data_get_data(self, treeview, context, selection, target_id, etime):
 		treeselection = treeview.get_selection()

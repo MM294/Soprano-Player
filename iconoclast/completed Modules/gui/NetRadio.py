@@ -108,8 +108,9 @@ class IconoRadio():
 		return self.playlisturl
 
 	def pl_entry(self, parser, url, htable):
-		try: print(htable['title'])
-		except:	print(htable['url'])
+		print(htable)
+		"""try: print(htable['title'])
+		except:	print(htable['url'])"""
 		self.playlist(htable['url'], True)
 
 	def parse_url(self, url):

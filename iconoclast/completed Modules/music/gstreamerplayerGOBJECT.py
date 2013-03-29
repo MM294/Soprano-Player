@@ -43,9 +43,12 @@ class MusicPlayer(object):
 		self.player.seek_simple(Gst.Format.TIME, Gst.SeekFlags.FLUSH, (currtracklength / 100)* where)
 
 	def track_percent(self):
-		tracklength = self.player.query_duration(Gst.Format.TIME)[1]
-		position = self.player.query_position(Gst.Format.TIME)[1]
-		return ((float(position)/tracklength)*100)
+		if self.get_track()[:6] == 'mms://':
+			return 0
+		else:
+			tracklength = self.player.query_duration(Gst.Format.TIME)[1]
+			position = self.player.query_position(Gst.Format.TIME)[1]
+			return ((float(position)/tracklength)*100)
 
 	def get_tracklength(self):
 		tracklength = self.player.query_duration(Gst.Format.TIME)[1]

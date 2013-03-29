@@ -1,11 +1,11 @@
-from gi.repository import Gtk, GdkPixbuf
+from gi.repository import Gtk, GdkPixbuf, Gdk
 from gui import PrefWin
 from settings import settings
 from settings import sopranoGlobals
 import os.path
 
 class SopranoPrefWin:
-	def __init__(self, showtray, closeon):
+	def __init__(self, showtray, closeon, parentwindow=None):
 		self.audioFolderlist = settings.IconoPrefs(sopranoGlobals.EXPLORER_DATA)
 		
 		page1, traycheckbox, closecheckbox = self.create_page1(showtray, closeon)
@@ -14,6 +14,9 @@ class SopranoPrefWin:
 		self.win.traycheckbox = traycheckbox
 		self.win.closecheckbox = closecheckbox
 		self.win.change = 0
+		self.win.set_modal(True)
+		if parentwindow != None:
+			self.win.set_transient_for(parentwindow)
 		self.win.create_category("Desktop", "folder", page1)
 
 	def create_page1(self, showtray, closeon):
@@ -114,15 +117,20 @@ class SopranoPrefWin:
 		label = Gtk.Label.new_with_mnemonic("_Uri")
 		table.attach_defaults (label, 0, 1, 1, 2)
 
-		local_entry2 = Gtk.Entry()
-		table.attach_defaults(local_entry2, 1, 2, 1, 2)
-		label.set_mnemonic_widget(local_entry2);
+		picker = Gtk.FileChooserButton.new('Pick a Folder',
+		Gtk.FileChooserAction.SELECT_FOLDER)
+		table.attach_defaults(picker, 1, 2, 1, 2)
+
+		#local_entry2 = Gtk.Entry()
+		#table.attach_defaults(local_entry2, 1, 2, 1, 2)
+		#label.set_mnemonic_widget(local_entry2);
 	  
 		vbox.show_all();
 		while True:
 			response = dialog.run()
 			if response == Gtk.ResponseType.OK:
-				station = (local_entry1.get_text(), local_entry2.get_text())
+				print(picker.get_current_folder())
+				station = (local_entry1.get_text(), picker.get_current_folder())# local_entry2.get_text())
 				if not os.path.isdir(station[1]):# != 'file://':
 					warnlabel.set_markup("<b>Not a Supported Uri</b>")
 				elif station[0] in self.audioFolderlist.get_radioStations().keys():

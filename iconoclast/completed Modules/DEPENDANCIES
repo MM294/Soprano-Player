@@ -1,3 +1,8 @@
-python-cddb
-gir1.2-totem-plparser-1.0 --when playlists implemented
-python3-dbus
+desktop-file-utils, 
+libgtk-3-0, 
+python, 
+python-cddb, 
+gir1.2-totem-plparser-1.0, 
+python3-dbus, 
+python-mutagen, 
+gir1.2-gtk-3.0

@@ -24,7 +24,7 @@ class PyApp(Gtk.Window):
     def __init__(self):
         super(PyApp, self).__init__()
         
-        self.set_size_request(150, 600)
+        self.set_size_request(600, 400)
         self.set_position(Gtk.WindowPosition.CENTER)
         
         self.connect("destroy", Gtk.main_quit)

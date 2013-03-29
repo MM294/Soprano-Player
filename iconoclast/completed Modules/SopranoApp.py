@@ -66,11 +66,10 @@ class SopranoApp:
 		timer = GObject.timeout_add(500, self.update_time_items)
 
 		#trayicon
-		#self.tray = IconoTray("rhythmbox")
-		self.tray = IconoTray("soprano-player-tray") #using rhythmbox icon since most themes have one
-		self.trayshowhide = self.tray.add_menu_item(self.toggle_window, "Hide")
+		self.tray = IconoTray("soprano-player-tray") 
+		self.trayshowhide = self.tray.add_menu_item(self.toggle_window, "Hide/Show")
 		self.tray.add_seperator()
-		self.trayplaypause = self.tray.add_menu_item(self.play_pause, "Play")
+		self.trayplaypause = self.tray.add_menu_item(self.play_pause, "Play/Pause")
 		self.tray.add_menu_item(self.play_next, "Next")
 		self.tray.add_menu_item(self.play_prev, "Previous")
 		self.tray.add_seperator()
@@ -179,8 +178,8 @@ class SopranoApp:
 			
 
 	def show_pref_win(self, widget=None):
-		newWin = SopranoPrefWin(self.showtrayicon, self.closetotray)
-		newWin.win.set_transient_for(self.window)
+		newWin = SopranoPrefWin(self.showtrayicon, self.closetotray, self.window)
+		#newWin.win.set_transient_for(self.window)
 		newWin.win.show_all()
 		newWin.win.connect("destroy", self.pref_win_closed)
 
@@ -202,10 +201,10 @@ class SopranoApp:
 	def toggle_window(self, justShow=True):
 		if self.window.get_property("visible") and not justShow == True:
 			self.window.hide()
-			self.trayshowhide.set_label("Show")
+			#self.trayshowhide.set_label("Show")
 		else:
 			self.window.show()
-			self.trayshowhide.set_label("Hide")
+			#self.trayshowhide.set_label("Hide")
 
 	def pre_exit(self, widget, var):
 		if widget == self.window and self.closetotray:
@@ -456,11 +455,11 @@ class SopranoApp:
 			else:
 				self.player.pause_item()
 			toolplayimg.set_from_icon_name('media-playback-start', Gtk.IconSize.LARGE_TOOLBAR)
-			self.trayplaypause.set_label("Play")			
+			#self.trayplaypause.set_label("Play")			
 		elif (self.player.get_state() == Gst.State.PAUSED):
 			self.player.play_item()
 			toolplayimg.set_from_icon_name('media-playback-pause', Gtk.IconSize.LARGE_TOOLBAR)
-			self.trayplaypause.set_label("Pause")			
+			#self.trayplaypause.set_label("Pause")			
 		else:#if os.path.isfile(filepath):
 			selected = self.iconoListView.get_sw().get_child().get_selection()
 			if selected.get_selected_rows()[1] != []:
@@ -473,17 +472,16 @@ class SopranoApp:
 
 			try: filepath = self.iconoListView.return_model().get_value(modeliter, 7)
 			except: return
-			self.trayplaypause.set_label("Pause")			
+			#self.trayplaypause.set_label("Pause")			
 			GObject.idle_add(self.playitem, filepath)
 			self.iconoListView.set_playmark(modeliter)
 			toolplayimg.set_from_icon_name('media-playback-pause', Gtk.IconSize.LARGE_TOOLBAR)
 			GObject.idle_add(self.cover_update)
-
+import sys
 import fcntl
 LOCK_PATH = os.path.join(os.path.expanduser('~'), '.sopranolock')
 fd = open(LOCK_PATH, 'w')
 fcntl.lockf(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
-
 app = SopranoApp()
 if __name__ == '__main__':
 	Gtk.main()
