@@ -1,10 +1,12 @@
+# -*- coding: utf-8 -*-
+
 # Copyright 2006 Joe Wreschnig
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 as
 # published by the Free Software Foundation.
 #
-# $Id: _util.py 4218 2007-12-02 06:11:20Z piman $
+# Modified for Python 3 by Ben Ockmore <ben.sput@gmail.com>
 
 """Utility classes for Mutagen.
 
@@ -13,101 +15,18 @@ intended for internal use in Mutagen only.
 """
 
 import struct
-from functools import total_ordering
 
 from fnmatch import fnmatchcase
 
-@total_ordering
-class DictMixin(object):
-    """Implement the dict API using keys() and __*item__ methods.
+from collections import OrderedDict
+from collections.abc import MutableMapping
 
-    Similar to UserDict.DictMixin, this takes a class that defines
-    __getitem__, __setitem__, __delitem__, and keys(), and turns it
-    into a full dict-like object.
 
-    UserDict.DictMixin is not suitable for this purpose because it's
-    an old-style class.
 
-    This class is not optimized for very large dictionaries; many
-    functions have linear memory requirements. I recommend you
-    override some of these functions if speed is required.
-    """
-
-    def __iter__(self):
-        return iter(list(self.keys()))
-
-    def has_key(self, key):
-        try: self[key]
-        except KeyError: return False
-        else: return True
-    __contains__ = has_key
-
-    iterkeys = lambda self: iter(list(self.keys()))
-
-    def values(self):
-        return list(map(self.__getitem__, list(self.keys())))
-    itervalues = lambda self: iter(list(self.values()))
-
-    def items(self):
-        return list(zip(list(self.keys()), list(self.values())))
-    iteritems = lambda s: iter(list(s.items()))
-
-    def clear(self):
-        list(map(self.__delitem__, list(self.keys())))
-
-    def pop(self, key, *args):
-        if len(args) > 1:
-            raise TypeError("pop takes at most two arguments")
-        try: value = self[key]
-        except KeyError:
-            if args: return args[0]
-            else: raise
-        del(self[key])
-        return value
-
-    def popitem(self):
-        try:
-            key = list(self.keys())[0]
-            return key, self.pop(key)
-        except IndexError: raise KeyError("dictionary is empty")
-
-    def update(self, other=None, **kwargs):
-        if other is None:
-            self.update(kwargs)
-            other = {}
-
-        try: list(map(self.__setitem__, list(other.keys()), list(other.values())))
-        except AttributeError:
-            for key, value in other:
-                self[key] = value
-
-    def setdefault(self, key, default=None):
-        try: return self[key]
-        except KeyError:
-            self[key] = default
-            return default
-
-    def get(self, key, default=None):
-        try: return self[key]
-        except KeyError: return default
-
-    def __repr__(self):
-        return repr(dict(list(self.items())))
-
-    def __eq__(self, other):
-        return {k:v for k,v in self.items()} == other
-
-    def __lt__(self, other):
-        return {k:v for k,v in self.items()} < other
-
-    __hash__ = object.__hash__
-
-    def __len__(self):
-        return len(list(self.keys()))
-
-class DictProxy(DictMixin):
+class DictProxy(MutableMapping):
     def __init__(self, *args, **kwargs):
-        self.__dict = {}
+        #Needs to be an ordered dict to get around a testing issue in EasyID3
+        self.__dict = OrderedDict()
         super(DictProxy, self).__init__(*args, **kwargs)
 
     def __getitem__(self, key):
@@ -119,53 +38,85 @@ class DictProxy(DictMixin):
     def __delitem__(self, key):
         del(self.__dict[key])
 
-    def keys(self):
-        return list(self.__dict.keys())
+    def __iter__(self):
+        return iter(self.__dict)
+
+    def __len__(self):
+        return len(self.__dict)
+
 
 class cdata(object):
     """C character buffer to Python numeric type conversions."""
 
     from struct import error
+    error = error
 
-    short_le = staticmethod(lambda data: struct.unpack('<h', data)[0])
-    ushort_le = staticmethod(lambda data: struct.unpack('<H', data)[0])
+    @staticmethod
+    def short_le(data): return struct.unpack('<h', data)[0]
+    @staticmethod
+    def ushort_le(data): return struct.unpack('<H', data)[0]
 
-    short_be = staticmethod(lambda data: struct.unpack('>h', data)[0])
-    ushort_be = staticmethod(lambda data: struct.unpack('>H', data)[0])
+    @staticmethod
+    def short_be(data): return struct.unpack('>h', data)[0]
+    @staticmethod
+    def ushort_be(data): return struct.unpack('>H', data)[0]
 
-    int_le = staticmethod(lambda data: struct.unpack('<i', data)[0])
-    uint_le = staticmethod(lambda data: struct.unpack('<I', data)[0])
+    @staticmethod
+    def int_le(data): return struct.unpack('<i', data)[0]
+    @staticmethod
+    def uint_le(data): return struct.unpack('<I', data)[0]
 
-    int_be = staticmethod(lambda data: struct.unpack('>i', data)[0])
-    uint_be = staticmethod(lambda data: struct.unpack('>I', data)[0])
+    @staticmethod
+    def int_be(data): return struct.unpack('>i', data)[0]
+    @staticmethod
+    def uint_be(data): return struct.unpack('>I', data)[0]
 
-    longlong_le = staticmethod(lambda data: struct.unpack('<q', data)[0])
-    ulonglong_le = staticmethod(lambda data: struct.unpack('<Q', data)[0])
+    @staticmethod
+    def longlong_le(data): return struct.unpack('<q', data)[0]
+    @staticmethod
+    def ulonglong_le(data): return struct.unpack('<Q', data)[0]
 
-    longlong_be = staticmethod(lambda data: struct.unpack('>q', data)[0])
-    ulonglong_be = staticmethod(lambda data: struct.unpack('>Q', data)[0])
+    @staticmethod
+    def longlong_be(data): return struct.unpack('>q', data)[0]
+    @staticmethod
+    def ulonglong_be(data): return struct.unpack('>Q', data)[0]
 
-    to_short_le = staticmethod(lambda data: struct.pack('<h', data))
-    to_ushort_le = staticmethod(lambda data: struct.pack('<H', data))
+    @staticmethod
+    def to_short_le(data): return struct.pack('<h', data)
+    @staticmethod
+    def to_ushort_le(data): return struct.pack('<H', data)
 
-    to_short_be = staticmethod(lambda data: struct.pack('>h', data))
-    to_ushort_be = staticmethod(lambda data: struct.pack('>H', data))
+    @staticmethod
+    def to_short_be(data): return struct.pack('>h', data)
+    @staticmethod
+    def to_ushort_be(data): return struct.pack('>H', data)
 
-    to_int_le = staticmethod(lambda data: struct.pack('<i', data))
-    to_uint_le = staticmethod(lambda data: struct.pack('<I', data))
+    @staticmethod
+    def to_int_le(data): return struct.pack('<i', data)
+    @staticmethod
+    def to_uint_le(data): return struct.pack('<I', data)
 
-    to_int_be = staticmethod(lambda data: struct.pack('>i', data))
-    to_uint_be = staticmethod(lambda data: struct.pack('>I', data))
+    @staticmethod
+    def to_int_be(data): return struct.pack('>i', data)
+    @staticmethod
+    def to_uint_be(data): return struct.pack('>I', data)
 
-    to_longlong_le = staticmethod(lambda data: struct.pack('<q', data))
-    to_ulonglong_le = staticmethod(lambda data: struct.pack('<Q', data))
+    @staticmethod
+    def to_longlong_le(data): return struct.pack('<q', data)
+    @staticmethod
+    def to_ulonglong_le(data): return struct.pack('<Q', data)
 
-    to_longlong_be = staticmethod(lambda data: struct.pack('>q', data))
-    to_ulonglong_be = staticmethod(lambda data: struct.pack('>Q', data))
+    @staticmethod
+    def to_longlong_be(data): return struct.pack('>q', data)
+    @staticmethod
+    def to_ulonglong_be(data): return struct.pack('>Q', data)
 
-    bitswap = bytes(sum([((val >> i) & 1) << (7-i) for i in range(8)]) for val in range(256))
+    bitswap = bytes(sum(((val >> i) & 1) << (7-i) for i in range(8))
+                       for val in range(256))
 
-    test_bit = staticmethod(lambda value, n: bool((value >> n) & 1))
+    @staticmethod
+    def test_bit(value, n): return bool((value >> n) & 1)
+
 
 def lock(fileobj):
     """Lock a file object 'safely'.
@@ -178,11 +129,14 @@ def lock(fileobj):
     raises an exception in more extreme circumstances (full
     lock table, invalid file).
     """
-    try: import fcntl
+
+    try:
+        import fcntl
     except ImportError:
         return False
     else:
-        try: fcntl.lockf(fileobj, fcntl.LOCK_EX)
+        try:
+            fcntl.lockf(fileobj, fcntl.LOCK_EX)
         except IOError:
             # FIXME: There's possibly a lot of complicated
             # logic that needs to go here in case the IOError
@@ -191,16 +145,19 @@ def lock(fileobj):
         else:
             return True
 
+
 def unlock(fileobj):
     """Unlock a file object.
 
     Don't call this on a file object unless a call to lock()
     returned true.
     """
+
     # If this fails there's a mismatched lock/unlock pair,
     # so we definitely don't want to ignore errors.
     import fcntl
     fcntl.lockf(fileobj, fcntl.LOCK_UN)
+
 
 def insert_bytes(fobj, size, offset, BUFFER_SIZE=2**16):
     """Insert size bytes of empty space starting at offset.
@@ -209,6 +166,7 @@ def insert_bytes(fobj, size, offset, BUFFER_SIZE=2**16):
     equivalent. Mutagen tries to use mmap to resize the file, but
     falls back to a significantly slower method if mmap fails.
     """
+
     assert 0 < size
     assert 0 <= offset
     locked = False
@@ -220,9 +178,11 @@ def insert_bytes(fobj, size, offset, BUFFER_SIZE=2**16):
     try:
         try:
             import mmap
-            map = mmap.mmap(fobj.fileno(), filesize + size)
-            try: map.move(offset + size, offset, movesize)
-            finally: map.close()
+            file_map = mmap.mmap(fobj.fileno(), filesize + size)
+            try:
+                file_map.move(offset + size, offset, movesize)
+            finally:
+                file_map.close()
         except (ValueError, EnvironmentError, ImportError):
             # handle broken mmap scenarios
             locked = lock(fobj)
@@ -260,6 +220,7 @@ def insert_bytes(fobj, size, offset, BUFFER_SIZE=2**16):
         if locked:
             unlock(fobj)
 
+
 def delete_bytes(fobj, size, offset, BUFFER_SIZE=2**16):
     """Delete size bytes of empty space starting at offset.
 
@@ -267,6 +228,7 @@ def delete_bytes(fobj, size, offset, BUFFER_SIZE=2**16):
     equivalent. Mutagen tries to use mmap to resize the file, but
     falls back to a significantly slower method if mmap fails.
     """
+
     locked = False
     assert 0 < size
     assert 0 <= offset
@@ -279,9 +241,11 @@ def delete_bytes(fobj, size, offset, BUFFER_SIZE=2**16):
             fobj.flush()
             try:
                 import mmap
-                map = mmap.mmap(fobj.fileno(), filesize)
-                try: map.move(offset, offset + size, movesize)
-                finally: map.close()
+                file_map = mmap.mmap(fobj.fileno(), filesize)
+                try:
+                    file_map.move(offset, offset + size, movesize)
+                finally:
+                    file_map.close()
             except (ValueError, EnvironmentError, ImportError):
                 # handle broken mmap scenarios
                 locked = lock(fobj)
@@ -299,13 +263,16 @@ def delete_bytes(fobj, size, offset, BUFFER_SIZE=2**16):
         if locked:
             unlock(fobj)
 
+
 def utf8(data):
-    """Convert a basestring to a valid UTF-8 str."""
+    """Converts anything resembling a string to UTF8-encoded bytes."""
+
     if isinstance(data, bytes):
         return data.decode("utf-8", "replace").encode("utf-8")
     elif isinstance(data, str):
         return data.encode("utf-8")
-    else: raise TypeError("only unicode/str types can be converted to UTF-8")
+    else:
+        raise TypeError("only str/bytes types can be converted to UTF-8")
 
 def dict_match(d, key, default=None):
     try:

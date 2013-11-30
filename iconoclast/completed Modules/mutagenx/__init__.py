@@ -1,32 +1,38 @@
-#! /usr/bin/env python
-#
-# mutagen aims to be an all purpose media tagging library
+# -*- coding: utf-8 -*-
+
 # Copyright (C) 2005  Michael Urman
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of version 2 of the GNU General Public License as
 # published by the Free Software Foundation.
 #
-# $Id: __init__.py 4348 2008-12-02 02:41:15Z piman $
-#
+# Modified for Python 3 by Ben Ockmore <ben.sput@gmail.com>
+
 
 """Mutagen aims to be an all purpose tagging library.
+
+::
 
     import mutagen.[format]
     metadata = mutagen.[format].Open(filename)
 
-metadata acts like a dictionary of tags in the file. Tags are generally a
+`metadata` acts like a dictionary of tags in the file. Tags are generally a
 list of string-like values, but may have additional methods available
 depending on tag or format. They may also be entirely different objects
 for certain keys, again depending on format.
 """
 
-version = (1, 20, -1)
-version_string = ".".join(map(str, version))
+version = (1, 22)
+"""Version tuple."""
+
+version_string = u'.'.join(str(v) for v in version)
+"""Version string."""
+
 
 import warnings
 
-import mutagen._util
+from collections.abc import MutableMapping
+
 
 class Metadata(object):
     """An abstract dict-like object.
@@ -42,17 +48,23 @@ class Metadata(object):
         raise NotImplementedError
 
     def save(self, filename=None):
+        """Save changes to a file."""
+
         raise NotImplementedError
 
     def delete(self, filename=None):
+        """Remove tags from a file."""
+
         raise NotImplementedError
 
-class FileType(mutagen._util.DictMixin):
+
+class FileType(MutableMapping):
     """An abstract object wrapping tags and audio stream information.
 
     Attributes:
-    info -- stream information (length, bitrate, sample rate)
-    tags -- metadata tags, if any
+
+    * info -- stream information (length, bitrate, sample rate)
+    * tags -- metadata tags, if any
 
     Each file format has different potential tags and stream
     information.
@@ -82,8 +94,11 @@ class FileType(mutagen._util.DictMixin):
 
         If the file has no tags at all, a KeyError is raised.
         """
-        if self.tags is None: raise KeyError(key)
-        else: return self.tags[key]
+
+        if self.tags is None:
+            raise KeyError(key)
+        else:
+            return self.tags[key]
 
     def __setitem__(self, key, value):
         """Set a metadata tag.
@@ -91,6 +106,7 @@ class FileType(mutagen._util.DictMixin):
         If the file has no tags, an appropriate format is added (but
         not written until save is called).
         """
+
         if self.tags is None:
             self.add_tags()
         self.tags[key] = value
@@ -100,19 +116,27 @@ class FileType(mutagen._util.DictMixin):
 
         If the file has no tags at all, a KeyError is raised.
         """
-        if self.tags is None: raise KeyError(key)
-        else: del(self.tags[key])
 
-    def keys(self):
-        """Return a list of keys in the metadata tag.
+        if self.tags is None:
+            raise KeyError(key)
+        else:
+            del(self.tags[key])
 
-        If the file has no tags at all, an empty list is returned.
-        """
-        if self.tags is None: return []
-        else: return list(self.tags.keys())
+    def __iter__(self):
+        if self.tags is None:
+            return iter([])
+        else:
+            return iter(list(self.tags.keys()))
+
+    def __len__(self):
+        if self.tags is None:
+            return 0
+        else:
+            return len(list(self.tags.keys()))
 
     def delete(self, filename=None):
         """Remove tags from a file."""
+
         if self.tags is not None:
             if filename is None:
                 filename = self.filename
@@ -124,6 +148,7 @@ class FileType(mutagen._util.DictMixin):
 
     def save(self, filename=None, **kwargs):
         """Save metadata tags."""
+
         if filename is None:
             filename = self.filename
         else:
@@ -132,20 +157,32 @@ class FileType(mutagen._util.DictMixin):
                 DeprecationWarning)
         if self.tags is not None:
             return self.tags.save(filename, **kwargs)
-        else: raise ValueError("no tags in file")
+        else:
+            raise ValueError("no tags in file")
 
     def pprint(self):
         """Print stream information and comment key=value pairs."""
+
         stream = "%s (%s)" % (self.info.pprint(), self.mime[0])
-        try: tags = self.tags.pprint()
+        try:
+            tags = self.tags.pprint()
         except AttributeError:
             return stream
-        else: return stream + ((tags and "\n" + tags) or "")
+        else:
+            return stream + ((tags and "\n" + tags) or "")
 
     def add_tags(self):
+        """Adds new tags to the file.
+
+        Raises if tags already exist.
+        """
+
         raise NotImplementedError
 
-    def __get_mime(self):
+    @property
+    def mime(self):
+        """A list of mime types"""
+
         mimes = []
         for Kind in type(self).__mro__:
             for mime in getattr(Kind, '_mimes', []):
@@ -153,7 +190,10 @@ class FileType(mutagen._util.DictMixin):
                     mimes.append(mime)
         return mimes
 
-    mime = property(__get_mime)
+    @staticmethod
+    def score(filename, fileobj, header):
+        raise NotImplementedError
+
 
 def File(filename, options=None, easy=False):
     """Guess the type of the file and try to open it.
@@ -163,39 +203,47 @@ def File(filename, options=None, easy=False):
     filename extension, and the presence of existing tags.
 
     If no appropriate type could be found, None is returned.
+
+    :param options: Sequence of :class:`FileType` implementations, defaults to
+                    all included ones.
+
+    :param easy: If the easy wrappers should be returnd if available.
+                 For example :class:`EasyMP3 <mp3.EasyMP3>` instead
+                 of :class:`MP3 <mp3.MP3>`.
     """
 
     if options is None:
-        from mutagen.asf import ASF
-        from mutagen.apev2 import APEv2File
-        from mutagen.flac import FLAC
+        from mutagenx.asf import ASF
+        from mutagenx.apev2 import APEv2File
+        from mutagenx.flac import FLAC
         if easy:
-            from mutagen.easyid3 import EasyID3FileType as ID3FileType
+            from mutagenx.easyid3 import EasyID3FileType as ID3FileType
         else:
-            from mutagen.id3 import ID3FileType
+            from mutagenx.id3 import ID3FileType
         if easy:
-            from mutagen.mp3 import EasyMP3 as MP3
+            from mutagenx.mp3 import EasyMP3 as MP3
         else:
-            from mutagen.mp3 import MP3
-        from mutagen.oggflac import OggFLAC
-        from mutagen.oggspeex import OggSpeex
-        from mutagen.oggtheora import OggTheora
-        from mutagen.oggvorbis import OggVorbis
+            from mutagenx.mp3 import MP3
+        from mutagenx.oggflac import OggFLAC
+        from mutagenx.oggspeex import OggSpeex
+        from mutagenx.oggtheora import OggTheora
+        from mutagenx.oggvorbis import OggVorbis
+        from mutagenx.oggopus import OggOpus
         if easy:
-            from mutagen.trueaudio import EasyTrueAudio as TrueAudio
+            from mutagenx.trueaudio import EasyTrueAudio as TrueAudio
         else:
-            from mutagen.trueaudio import TrueAudio
-        from mutagen.wavpack import WavPack
+            from mutagenx.trueaudio import TrueAudio
+        from mutagenx.wavpack import WavPack
         if easy:
-            from mutagen.easymp4 import EasyMP4 as MP4
+            from mutagenx.easymp4 import EasyMP4 as MP4
         else:
-            from mutagen.mp4 import MP4
-        from mutagen.musepack import Musepack
-        from mutagen.monkeysaudio import MonkeysAudio
-        from mutagen.optimfrog import OptimFROG
+            from mutagenx.mp4 import MP4
+        from mutagenx.musepack import Musepack
+        from mutagenx.monkeysaudio import MonkeysAudio
+        from mutagenx.optimfrog import OptimFROG
         options = [MP3, TrueAudio, OggTheora, OggSpeex, OggVorbis, OggFLAC,
                    FLAC, APEv2File, MP4, ID3FileType, WavPack, Musepack,
-                   MonkeysAudio, OptimFROG, ASF]
+                   MonkeysAudio, OptimFROG, ASF, OggOpus]
 
     if not options:
         return None
@@ -212,5 +260,7 @@ def File(filename, options=None, easy=False):
         fileobj.close()
     results = sorted(zip(results, options))
     (score, name), Kind = results[-1]
-    if score > 0: return Kind(filename)
-    else: return None
+    if score > 0:
+        return Kind(filename)
+    else:
+        return None

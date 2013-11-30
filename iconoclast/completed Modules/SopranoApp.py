@@ -55,7 +55,6 @@ class SopranoApp:
 		self.builder.connect_signals(self)
 
 		self.window = self.builder.get_object('win-main')
-		print(self.winwidth,self.winheight)
 		self.window.set_default_size(self.winwidth,self.winheight)
 		self.window.connect('delete-event', self.pre_exit)
 		

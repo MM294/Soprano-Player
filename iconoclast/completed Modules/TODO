@@ -7,8 +7,8 @@ Smarter Column Sorting
 
 --Low Prio
 lookup CD metadata
-Media Library - Could be done by creating symlinks to all files in a hidden local folder!
-Speed up reading mp3 tags, maybe bypass mutagen for it
+Media Library - Could be done by creating symlinks to all files in a hidden local folder or by creating an sqlite DB
+Speed up reading mp3 tags, maybe bypass mutagen for it, hell of a lot of overhead compared to other file types
 
 --Specifics
 delFolderExplorer should be rewritten to remove one page rather than removing and remaking the entire notebook
@@ -24,4 +24,4 @@ Multiple Selection Drag and Drop - DONE
 Single Instance - DONE
 Preferences - DONE
 MPRIS/Sound Menu support - DONE
-port to python3 - DONE except AudioCD module, though cant be finished untill mutagen is ported to python3 
+port to python3 - DONE except AudioCD module, though cant be finished until mutagen is ported to python3 

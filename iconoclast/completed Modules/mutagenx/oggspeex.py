@@ -1,12 +1,12 @@
-# Ogg Speex support.
-#
+# -*- coding: utf-8 -*-
+
 # Copyright 2006 Joe Wreschnig
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 as
 # published by the Free Software Foundation.
 #
-# $Id: oggspeex.py 3976 2007-01-13 22:00:14Z piman $
+# Modified for Python 3 by Ben Ockmore <ben.sput@gmail.com>
 
 """Read and write Ogg Speex comments.
 
@@ -21,20 +21,27 @@ http://lists.xiph.org/pipermail/speex-dev/2006-July/004676.html.
 
 __all__ = ["OggSpeex", "Open", "delete"]
 
-from mutagen._vorbis import VCommentDict
-from mutagen.ogg import OggPage, OggFileType, error as OggError
-from mutagen._util import cdata
+from mutagenx._vorbis import VComment
+from mutagenx.ogg import OggPage, OggFileType, error as OggError
+from mutagenx._util import cdata
 
-class error(OggError): pass
-class OggSpeexHeaderError(error): pass
+
+class error(OggError):
+    pass
+
+
+class OggSpeexHeaderError(error):
+    pass
+
 
 class OggSpeexInfo(object):
     """Ogg Speex stream information.
 
     Attributes:
-    bitrate - nominal bitrate in bits per second
-    channels - number of channels
-    length - file length in seconds, as a float
+
+    * bitrate - nominal bitrate in bits per second
+    * channels - number of channels
+    * length - file length in seconds, as a float
 
     The reference encoder does not set the bitrate; in this case,
     the bitrate will be 0.
@@ -54,10 +61,15 @@ class OggSpeexInfo(object):
         self.bitrate = max(0, cdata.int_le(page.packets[0][52:56]))
         self.serial = page.serial
 
+    def _post_tags(self, fileobj):
+        page = OggPage.find_last(fileobj, self.serial)
+        self.length = page.position / self.sample_rate
+
     def pprint(self):
         return "Ogg Speex, %.2f seconds" % self.length
 
-class OggSpeexVComment(VCommentDict):
+
+class OggSpeexVComment(VComment):
     """Speex comments embedded in an Ogg bitstream."""
 
     def __init__(self, fileobj, info):
@@ -104,6 +116,7 @@ class OggSpeexVComment(VCommentDict):
         new_pages = OggPage.from_packets(packets, old_pages[0].sequence)
         OggPage.replace(fileobj, old_pages, new_pages)
 
+
 class OggSpeex(OggFileType):
     """An Ogg Speex file."""
 
@@ -112,12 +125,15 @@ class OggSpeex(OggFileType):
     _Error = OggSpeexHeaderError
     _mimes = ["audio/x-speex"]
 
+    @staticmethod
     def score(filename, fileobj, header):
         return (header.startswith(b"OggS") * (b"Speex   " in header))
-    score = staticmethod(score)
+
 
 Open = OggSpeex
 
+
 def delete(filename):
     """Remove tags from a file."""
+
     OggSpeex(filename).delete()

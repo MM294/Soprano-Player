@@ -1,9 +1,9 @@
-from mutagen.mp3 import MP3
-from mutagen.id3 import ID3
-from mutagen.mp4 import MP4
-from mutagen.oggvorbis import OggVorbis
-from mutagen.flac import FLAC
-from mutagen.asf import ASF
+from mutagenx.mp3 import MP3
+from mutagenx.id3 import ID3
+from mutagenx.mp4 import MP4
+from mutagenx.oggvorbis import OggVorbis
+from mutagenx.flac import FLAC
+from mutagenx.asf import ASF
 import os.path
 from settings import sopranoGlobals, settings
 
@@ -37,10 +37,10 @@ class TrackMetaData:
 			else:
 				songtitle = "Unknown Title"
 
-		tracknum = None		
+		tracknum = 0		
 		artist = "Radio Station"
 		album = "Radio Station"
-		genre = None
+		genre = "None"
 		
 		tracklength = "N/A"
 
@@ -51,7 +51,7 @@ class TrackMetaData:
 		songtitle = "Track " + str(tracknum)
 		artist = "Unknown Artist"
 		album = "Compact Disc"
-		genre = None
+		genre = "None"
 		
 		tracklength = "%02i:%02i" %(0,0)
 
@@ -70,7 +70,7 @@ class TrackMetaData:
 		except: return [None, 0, '', '', '', self.getTracklength(filepath), '', filepath]
 		#print(systime() - systime1)
 		try: tracknum = audio["TRCK"][0]
-		except: tracknum = None
+		except: tracknum = 0
 		if tracknum is not None:
 			try:    tracknum = int(tracknum.split('/')[0])
 			except ValueError: tracknum = 0
@@ -83,7 +83,7 @@ class TrackMetaData:
 		try: album = audio["TALB"][0]
 		except: album = "Unknown Album"
 		try: genre = audio["TCON"][0]
-		except: genre = None
+		except: genre = "None"
 
 		tracklength = int(round(audio.info.length))
 		m,s = divmod(tracklength, 60)
@@ -96,11 +96,23 @@ class TrackMetaData:
 		except: return [None, 0, '', '', '', self.getTracklength(filepath), '', filepath]
 
 		try: tracknum = audio["trkn"][0][0]
-		except: tracknum = None
+		except: tracknum = 0
 		if tracknum is not None:
 			try:    tracknum = int(tracknum.split('/')[0])
 			except ValueError: tracknum = 0
 			except: tracknum = int(tracknum)
+
+		#python3.x
+		try: songtitle = audio[b"\xa9nam"][0]
+		except: songtitle = "Unknown Title"
+		try: artist = audio[b"\xa9ART"][0]
+		except: artist = "Unknown Artist"
+		try: album = audio[b"\xa9alb"][0]
+		except: album = "Unknown Album"
+		try: genre = audio[b"\xa9gen"][0]
+		except: genre = "None"""
+
+		"""#python2.7
 		try: songtitle = audio["\xa9nam"][0]
 		except: songtitle = "Unknown Title"
 		try: artist = audio["\xa9ART"][0]
@@ -108,7 +120,7 @@ class TrackMetaData:
 		try: album = audio["\xa9alb"][0]
 		except: album = "Unknown Album"
 		try: genre = audio["\xa9gen"][0]
-		except: genre = None
+		except: genre = "None"""
 
 		tracklength = int(round(audio.info.length))
 		m,s = divmod(tracklength, 60)
@@ -121,7 +133,7 @@ class TrackMetaData:
 		except: return [None, 0, '', '', '', self.getTracklength(filepath), '', filepath]
 
 		try: tracknum = audio["tracknumber"][0] 
-		except: tracknum = None
+		except: tracknum = 0
 		if tracknum is not None:
 			try:    tracknum = int(tracknum.split('/')[0])
 			except ValueError: tracknum = 0
@@ -133,7 +145,7 @@ class TrackMetaData:
 		try: album = audio["album"][0]
 		except: album = "Unknown Album"
 		try: genre = audio["genre"][0]
-		except: genre = None
+		except: genre = "None"
 
 		tracklength = int(round(audio.info.length))
 		m,s = divmod(tracklength, 60)
@@ -146,7 +158,7 @@ class TrackMetaData:
 		except: return [None, 0, '', '', '', self.getTracklength(filepath), '', filepath]
 
 		try: tracknum = audio["tracknumber"][0] 
-		except: tracknum = None
+		except: tracknum = 0
 		if tracknum is not None:
 			try:    tracknum = int(tracknum.split('/')[0])
 			except ValueError: tracknum = 0
@@ -158,7 +170,7 @@ class TrackMetaData:
 		try: album = audio["album"][0]
 		except: album = "Unknown Album"
 		try: genre = audio["genre"][0]
-		except: genre = None
+		except: genre = "None"
 
 		tracklength = int(round(audio.info.length))
 		m,s = divmod(tracklength, 60)
@@ -171,7 +183,7 @@ class TrackMetaData:
 		except: return [None, 0, '', '', '', self.getTracklength(filepath), '', filepath]
 
 		try: tracknum = audio["WM/TrackNumber"][0]
-		except: tracknum = None
+		except: tracknum = 0
 		if tracknum is not None:
 			try:    tracknum = int(tracknum.split('/')[0])
 			except ValueError: tracknum = 0
@@ -183,7 +195,7 @@ class TrackMetaData:
 		try: album = str(audio["WM/AlbumTitle"][0])
 		except: album = "Unknown Album"
 		try: genre = str(audio["WM/Genre"][0])
-		except: genre = None
+		except: genre = "None"
 
 		tracklength = int(round(audio.info.length))
 		m,s = divmod(tracklength, 60)
