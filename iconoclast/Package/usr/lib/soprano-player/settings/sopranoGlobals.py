@@ -13,7 +13,7 @@ SETTINGS_DATA = os.path.join(CONFIGDIR, 'settings.icono')
 RADIO_DATA = os.path.join(CONFIGDIR, 'netradio.icono')
 EXPLORER_DATA = os.path.join(CONFIGDIR, 'folders.icono')
 
-DATADIR = '/media/Media/Backup/Linux/Home Folder/Desktop/Python/IconoClast/iconoclast/completed Modules/data'
+DATADIR = '/usr/lib/soprano-player/data'
 
 __tempLabel = Gtk.Label()
 PLACEHOLDER =  GdkPixbuf.Pixbuf().new_from_file(os.path.join(DATADIR ,'crashbit-soprano.png'))

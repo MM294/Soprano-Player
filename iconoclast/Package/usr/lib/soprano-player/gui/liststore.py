@@ -106,11 +106,11 @@ class IconoListView():
 			#print "internals"			
 			if not destpath in paths:
 				if (position == Gtk.TreeViewDropPosition.BEFORE):# or position == Gtk.TreeViewDropPosition.INTO_OR_BEFORE):
-					print "into or before"
+					print("into or before")
 					for currentref in refs:
 						model.move_before(model.get_iter(currentref.get_path()), destiter)
 				else:
-					print "else"
+					print("else")
 					for currentref in reversed(refs):
 						model.move_after(model.get_iter(currentref.get_path()), destiter)
 		else:
