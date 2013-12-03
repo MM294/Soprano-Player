@@ -15,6 +15,7 @@ from music.tagreading import TrackMetaData
 from music.cdcover import getCover # 10.6 Mb of Memory
 from music.gstreamerplayerGOBJECT import MusicPlayer
 from music.mpris import SoundMenuControls
+from music.musicdb import MusicDB
 
 from gui.combobox import HeaderedComboBox
 from gui.aboutbox import aboutBoxShow
@@ -24,16 +25,18 @@ from gui.NetRadio import IconoRadio
 from gui.liststore import IconoListView # about 11.2mb of memory
 from gui.prefs import SopranoPrefWin
 from gui.trayicon import IconoTray
+from gui.medialibrary import IconoMediaLibrary
 
 class SopranoApp:
 	def __init__(self):
 		#Global Variables (keep to a minimum)
 		self.settings = settings.IconoSettings(sopranoGlobals.SETTINGS_DATA)
+		self.SopranoDB = MusicDB(os.path.join(sopranoGlobals.CONFIGDIR, 'sopranoDB.db'))
 		self.taglookup = TrackMetaData()
 		self.seekingnow = False		
 		#load settings
 		self.currentview, self.winwidth, self.winheight, self.defaultexplorer, self.shuffle, self.repeat, self.showtrayicon, self.closetotray = self.settings.get_settings()
-		
+
 		#turn on the dbus mainloop for sound menu
 		from dbus.mainloop.glib import DBusGMainLoop
 		DBusGMainLoop(set_as_default=True)
@@ -271,6 +274,9 @@ class SopranoApp:
 		self.setup_explorer_page(self.notebook, aCdTree.get_sw(), self.hCombo, [self.notebook.get_n_pages(), 0, "<b>Audio CD</b>", sopranoGlobals.TRACKPB])		
 		self.setup_explorer_page(self.notebook, self.aRadio.get_sw(), self.hCombo, [self.notebook.get_n_pages(), 0, "<b>Radio</b>", sopranoGlobals.RADIOPB])
 
+		self.medialib = IconoMediaLibrary(self.SopranoDB, "file:///media/Media/Music")
+		self.setup_explorer_page(self.notebook, self.medialib.get_sw(), self.hCombo, [self.notebook.get_n_pages(), 0, "<b>Library</b>", sopranoGlobals.USERSPB])
+
 		self.notebook.set_current_page(self.defaultexplorer)
 		self.hCombo.set_active(self.defaultexplorer)		
 
@@ -481,11 +487,11 @@ class SopranoApp:
 			self.iconoListView.set_playmark(modeliter)
 			toolplayimg.set_from_icon_name('media-playback-pause', Gtk.IconSize.LARGE_TOOLBAR)
 			GObject.idle_add(self.cover_update)
-import sys
+"""import sys
 import fcntl
 LOCK_PATH = os.path.join(os.path.expanduser('~'), '.sopranolock')
 fd = open(LOCK_PATH, 'w')
-fcntl.lockf(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+fcntl.lockf(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)"""
 app = SopranoApp()
 if __name__ == '__main__':
 	Gtk.main()

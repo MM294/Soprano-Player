@@ -1,6 +1,10 @@
 import gi
 gi.require_version('Gst', '1.0')
-from gi.repository import Gtk, GdkPixbuf, GObject, AppIndicator3, Notify, Gst# about 8.5 Mb memory used here
+from gi.repository import Gtk, GdkPixbuf, GObject, Notify, Gst# about 8.5 Mb memory used here
+try:
+	from gi.repository import AppIndicator3
+except:
+	print("No Indicator Support")
 import os.path#, gst #gst uses 4.5 Mb of memory alone
 
 from settings import settings
@@ -179,7 +183,7 @@ class SopranoApp:
 
 	def show_pref_win(self, widget=None):
 		newWin = SopranoPrefWin(self.showtrayicon, self.closetotray, self.window)
-		#newWin.win.set_transient_for(self.window)
+		newWin.win.set_transient_for(self.window)
 		newWin.win.show_all()
 		newWin.win.connect("destroy", self.pref_win_closed)
 
@@ -218,9 +222,9 @@ class SopranoApp:
 		self.window.hide()
 		self.tray = None
 		if self.currentview != 'mini':
-			size = self.window.get_allocation()
-			winheight = size.height
-			winwidth = size.width
+			size = self.window.get_size()
+			winheight = size[1]#.height
+			winwidth = size[0]#.width
 		else:
 			winheight = self.winheight
 			winwidth = self.winwidth
