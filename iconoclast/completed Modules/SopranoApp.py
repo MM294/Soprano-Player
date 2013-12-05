@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import gi
 gi.require_version('Gst', '1.0')
 from gi.repository import Gtk, GdkPixbuf, GObject, Notify, Gst# about 8.5 Mb memory used here

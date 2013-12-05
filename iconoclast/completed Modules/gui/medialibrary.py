@@ -77,19 +77,21 @@ class IconoMediaLibrary():
 		if iter == None:
 			self.database.cursor.execute("SELECT DISTINCT Artist FROM Songs")
 			artists = self.database.cursor.fetchall()
-			for artist in artists:
+			for artist in sorted(artists):
 				artistiter = model.append(None, [sopranoGlobals.USERSPB, "", artist[0], 0, "artist"])
 				treeview.get_model().append(artistiter, [sopranoGlobals.FOLDERPB, "", "artist", 3, artist[0]])
 		elif model.get_value(iter, 4) == "artist":
 			self.database.cursor.execute("SELECT DISTINCT Album FROM Songs WHERE Artist='{}'".format(model.get_value(iter, 2).replace("'","''")))
 			albums = self.database.cursor.fetchall()
-			for album in albums:
+			for album in sorted(albums):
 				albumiter = model.append(iter, [sopranoGlobals.TRACKPB, "", album[0], 3, "album"])
 				treeview.get_model().append(albumiter, [sopranoGlobals.FOLDERPB,"", "album", 3, album[0]])
 		elif model.get_value(iter, 4) == "album":
-			self.database.cursor.execute("SELECT TrackNum,Title,Url FROM Songs WHERE Album='{}'".format(model.get_value(iter, 2).replace("'","''")))
+			artistiter = model.iter_parent(iter)
+			artistname = model.get_value(artistiter, 2).replace("'","''")
+			self.database.cursor.execute("SELECT TrackNum,Title,Url FROM Songs WHERE Album='{}' AND Artist='{}'".format(model.get_value(iter, 2).replace("'","''"),artistname))
 			tracks = self.database.cursor.fetchall()
-			for track in tracks:
+			for track in sorted(tracks):
 				model.append(iter, [sopranoGlobals.FILEPB, str(track[0]), track[1], 1, track[2]])
 
 		print("%s%f" % ("Operation took ",systime() - systime1))
