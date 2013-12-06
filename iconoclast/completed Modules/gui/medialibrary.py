@@ -80,12 +80,9 @@ class IconoMediaLibrary():
 		return True
 
 	def setup_treestore(self, treeview, path, iter=None):
-		from time import time as systime
-		systime1 = systime()
-
 		model = treeview.get_model()
-		try: print(model.get_value(iter, 4))
-		except: pass
+		#try: print(model.get_value(iter, 4))
+		#except: pass
 
 		if iter == None:
 			self.database.cursor.execute("SELECT DISTINCT Artist FROM Songs")
@@ -106,9 +103,7 @@ class IconoMediaLibrary():
 			tracks = self.database.cursor.fetchall()
 			for track in sorted(tracks):
 				model.append(iter, [sopranoGlobals.FILEPB, str(track[0]), track[1], 1, track[2]])
-
-		print("%s%f" % ("Operation took ",systime() - systime1))
-			
+		
 
 	def on_activate(self, treeview, path, column):
 		if treeview.row_expanded(path):

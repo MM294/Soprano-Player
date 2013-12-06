@@ -24,6 +24,9 @@ class MusicDB(threading.Thread):
 
 
 	def rebuild_database(self):
+		from time import time as systime
+		systime1 = systime()
+
 		#Tempory Database connection for thread
 		conn = sqlite3.connect(self.dblocation)
 		cursor = conn.cursor()
@@ -60,6 +63,7 @@ class MusicDB(threading.Thread):
 							query = "INSERT INTO Songs(TrackNum,Title,Artist,Album,Length,Genre,Url) VALUES ({},'{}','{}','{}','{}','{}','{}');".format(metadata[1],metadata[2],metadata[3],metadata[4],metadata[5],metadata[6],metadata[7])
 							cursor.execute(query)	
 				conn.commit()
+		print("%s%f" % ("Operation took ",systime() - systime1))
 
 	def run(self):
 		self.rebuild_database()

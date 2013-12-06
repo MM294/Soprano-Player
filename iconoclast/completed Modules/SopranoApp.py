@@ -39,6 +39,7 @@ class SopranoApp:
 
 		libraryFolderlist = settings.IconoPrefs(sopranoGlobals.LIBRARY_DATA)
 		self.SopranoDB = MusicDB(os.path.join(sopranoGlobals.CONFIGDIR, 'sopranoDB.db'))
+		libraryFolderlist.add_radio(('/media/Media/Music','/media/Media/Music'))
 		for key,value in libraryFolderlist.get_radioStations().items():
 			self.SopranoDB.add_folder(value)
 
