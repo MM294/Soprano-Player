@@ -6,9 +6,9 @@ from gi.repository import Gtk, GdkPixbuf, Gdk;
 from settings import sopranoGlobals, settings
 
 class IconoMediaLibrary():
-	def __init__(self, database, path):
+	def __init__(self, database):
 		self.database = database
-		self.path = path
+		#self.path = path
 		self.sw = Gtk.ScrolledWindow()	
 
 		parents = {}
@@ -61,7 +61,20 @@ class IconoMediaLibrary():
 
 
 	def afunc(self, model, path, iter, data):
-		data.append(model.get_value(iter, 4) + '\n')
+		if model.get_value(iter, 4) == "artist":
+			self.database.cursor.execute("SELECT Url FROM Songs WHERE Artist='{}' ORDER BY Album, TrackNum".format(model.get_value(iter, 2).replace("'","''")))
+			urls = self.database.cursor.fetchall()
+			for item in urls:
+				data.append(item[0] + '\n')
+		elif model.get_value(iter, 4) == "album":
+			self.database.cursor.execute("SELECT Url FROM Songs WHERE Album='{}' ORDER BY TrackNum".format(model.get_value(iter, 2).replace("'","''")))
+			urls = self.database.cursor.fetchall()
+			for item in urls:
+				data.append(item[0] + '\n')
+		else:
+			data.append(model.get_value(iter, 4) + '\n')
+
+		#data.append(model.get_value(iter, 4) + '\n')
 
 	def drag_begin_cb(self, widget, dragcontext):
 		return True
@@ -146,8 +159,11 @@ class IconoMediaLibrary():
 		return True
 
 	def rescanLibrary(self, widget=None):
+		self.database.start()
+		while self.database.is_alive():
+			while Gtk.events_pending():
+				Gtk.main_iteration()
 		self.treeview.get_model().clear()
-		self.database.rebuild_database(self.path)
 		self.setup_treestore(self.treeview, None)
 
 #debug and testing stuff
@@ -155,7 +171,10 @@ class IconoMediaLibrary():
 #rows = SopranoDB.cursor.fetchall()
 #print(rows[0])
 
-"""treefile = IconoMediaLibrary(SopranoDB, "file:///media/Media/Music")
+"""SopranoDB = MusicDB(os.path.join(sopranoGlobals.CONFIGDIR, 'sopranoDB.db'))
+SopranoDB.add_folder("file:///media/Media/Music")
+
+treefile = IconoMediaLibrary(SopranoDB)
 
 window = Gtk.Window()
 nb = Gtk.Notebook()

@@ -12,6 +12,7 @@ TREE_DATA = os.path.join(CONFIGDIR, 'treedata.icono')
 SETTINGS_DATA = os.path.join(CONFIGDIR, 'settings.icono')
 RADIO_DATA = os.path.join(CONFIGDIR, 'netradio.icono')
 EXPLORER_DATA = os.path.join(CONFIGDIR, 'folders.icono')
+LIBRARY_DATA = os.path.join(CONFIGDIR, 'library.icono')
 
 DATADIR = '/usr/lib/soprano-player/data'
 

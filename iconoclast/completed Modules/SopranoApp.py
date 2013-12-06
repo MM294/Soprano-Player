@@ -32,11 +32,15 @@ class SopranoApp:
 	def __init__(self):
 		#Global Variables (keep to a minimum)
 		self.settings = settings.IconoSettings(sopranoGlobals.SETTINGS_DATA)
-		self.SopranoDB = MusicDB(os.path.join(sopranoGlobals.CONFIGDIR, 'sopranoDB.db'))
 		self.taglookup = TrackMetaData()
 		self.seekingnow = False		
 		#load settings
 		self.currentview, self.winwidth, self.winheight, self.defaultexplorer, self.shuffle, self.repeat, self.showtrayicon, self.closetotray = self.settings.get_settings()
+
+		libraryFolderlist = settings.IconoPrefs(sopranoGlobals.LIBRARY_DATA)
+		self.SopranoDB = MusicDB(os.path.join(sopranoGlobals.CONFIGDIR, 'sopranoDB.db'))
+		for key,value in libraryFolderlist.get_radioStations().items():
+			self.SopranoDB.add_folder(value)
 
 		#turn on the dbus mainloop for sound menu
 		from dbus.mainloop.glib import DBusGMainLoop
@@ -271,11 +275,11 @@ class SopranoApp:
 		for key, value in audioFolderlist.get_radioStations().items():
 			explorer = IconoTreeFile(value, sopranoGlobals.FILE_FORMATS)	
 			self.setup_explorer_page(self.notebook, explorer.get_sw(), self.hCombo, [self.notebook.get_n_pages(), 0, key, sopranoGlobals.FOLDERPB])
-		aCdTree = IconoAudioCD()
-		self.setup_explorer_page(self.notebook, aCdTree.get_sw(), self.hCombo, [self.notebook.get_n_pages(), 0, "<b>Audio CD</b>", sopranoGlobals.TRACKPB])		
+		#aCdTree = IconoAudioCD()
+		#self.setup_explorer_page(self.notebook, aCdTree.get_sw(), self.hCombo, [self.notebook.get_n_pages(), 0, "<b>Audio CD</b>", sopranoGlobals.TRACKPB])		
 		self.setup_explorer_page(self.notebook, self.aRadio.get_sw(), self.hCombo, [self.notebook.get_n_pages(), 0, "<b>Radio</b>", sopranoGlobals.RADIOPB])
 
-		self.medialib = IconoMediaLibrary(self.SopranoDB, "file:///media/Media/Music")
+		self.medialib = IconoMediaLibrary(self.SopranoDB)
 		self.setup_explorer_page(self.notebook, self.medialib.get_sw(), self.hCombo, [self.notebook.get_n_pages(), 0, "<b>Library</b>", sopranoGlobals.USERSPB])
 
 		self.notebook.set_current_page(self.defaultexplorer)
