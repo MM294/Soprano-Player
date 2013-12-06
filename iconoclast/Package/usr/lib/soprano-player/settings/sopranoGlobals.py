@@ -12,6 +12,7 @@ TREE_DATA = os.path.join(CONFIGDIR, 'treedata.icono')
 SETTINGS_DATA = os.path.join(CONFIGDIR, 'settings.icono')
 RADIO_DATA = os.path.join(CONFIGDIR, 'netradio.icono')
 EXPLORER_DATA = os.path.join(CONFIGDIR, 'folders.icono')
+LIBRARY_DATA = os.path.join(CONFIGDIR, 'library.icono')
 
 DATADIR = '/usr/lib/soprano-player/data'
 
@@ -22,6 +23,9 @@ currentGtkIconTheme = Gtk.IconTheme.get_default()
 
 try: FILEPB = currentGtkIconTheme.load_icon('audio-x-generic', 16, Gtk.IconLookupFlags.FORCE_SIZE)
 except: FILEPB = GdkPixbuf.Pixbuf().new_from_file(os.path.join(DATADIR, 'musicfile.png'))
+
+try: USERSPB = currentGtkIconTheme.load_icon('system-users', 16, Gtk.IconLookupFlags.FORCE_SIZE)
+except: USERSPB = GdkPixbuf.Pixbuf().new_from_file(os.path.join(DATADIR, 'foldericon.png'))
 
 try: FOLDERPB = __tempLabel.render_icon(Gtk.STOCK_DIRECTORY, Gtk.IconSize.MENU)#currentGtkIconTheme.load_icon('folder', 16, Gtk.IconLookupFlags.FORCE_SIZE)
 except: FOLDERPB = GdkPixbuf.Pixbuf().new_from_file(os.path.join(DATADIR, 'foldericon.png'))

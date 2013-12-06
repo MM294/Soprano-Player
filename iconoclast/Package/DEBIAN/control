@@ -5,7 +5,7 @@ Installed-Size: 840
 Maintainer: root@mike-Z87N-wifi
 Architecture: amd64
 Version: 0.28
-Depends: desktop-file-utils, libgtk-3-0, python3, python-cddb, gir1.2-totem-plparser-1.0, python3-dbus, gir1.2-gtk-3.0
+Depends: desktop-file-utils, libgtk-3-0, python3, python-cddb, gir1.2-totem-plparser-1.0, python3-dbus, gir1.2-gtk-3.0, python3-magic
 Provides:
 Description: An Music Player written in python gtk3 and cairo, 
  This is an alpha release, report any issues at https://github.com/MM294/Soprano-Player/issues
