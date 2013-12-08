@@ -493,11 +493,11 @@ class SopranoApp:
 			self.iconoListView.set_playmark(modeliter)
 			toolplayimg.set_from_icon_name('media-playback-pause', Gtk.IconSize.LARGE_TOOLBAR)
 			GObject.idle_add(self.cover_update)
-"""import sys
+import sys
 import fcntl
 LOCK_PATH = os.path.join(os.path.expanduser('~'), '.sopranolock')
 fd = open(LOCK_PATH, 'w')
-fcntl.lockf(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)"""
+fcntl.lockf(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
 app = SopranoApp()
 if __name__ == '__main__':
 	Gtk.main()

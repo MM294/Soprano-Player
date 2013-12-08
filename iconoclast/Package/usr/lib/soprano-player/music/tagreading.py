@@ -6,14 +6,15 @@ from mutagenx.flac import FLAC
 from mutagenx.asf import ASF
 import os.path, magic
 from settings import sopranoGlobals, settings
-m = magic.open(magic.MAGIC_MIME)
-m.load()
+
 
 #FILE_FORMATS = {'.mp3','.ogg','.oga','.wma','.flac','.m4a','.mp4','.aac'}
 FILE_FORMATS = {'.audio/mp4; charset=binary','audio/mpeg; charset=binary','application/ogg; charset=binary','audio/x-flac; charset=binary','audio/x-wav; charset=binary','audio/x-ms-asf; charset=binary','video/x-ms-asf; charset=binary'}
 
 class TrackMetaData:
 	def getTrackType(self, filepath):
+		m = magic.open(magic.MAGIC_MIME)
+		m.load()
 		options = {	'application/ogg; charset=binary' : self.oggInfo,
 					'.audio/mp4; charset=binary' : self.m4aInfo,
 					'audio/mpeg; charset=binary' : self.id3Info,
@@ -23,11 +24,13 @@ class TrackMetaData:
 					'audio/x-wav; charset=binary' : self.id3Info}
 
 		#fileExtension = os.path.splitext(filepath.lower())[1]
-		fileDescription = m.file(filepath)
+		filepath = filepath.replace('file://','')
+		try: fileDescription = m.file(filepath)
+		except: fileDescription = "Invalid Format"
 		if filepath[:7] == 'http://' or filepath[:6] == 'mms://':
 			return self.radioInfo(filepath)
 		elif fileDescription in FILE_FORMATS:
-			filepath = filepath.replace('%5B','[').replace('%5D',']').replace('file://','').replace('%25', '%').replace('%23', '#')
+			filepath = filepath.replace('%5B','[').replace('%5D',']').replace('%25', '%').replace('%23', '#')
 			if os.path.exists(filepath):
 				return options[fileDescription](filepath)
 			else:

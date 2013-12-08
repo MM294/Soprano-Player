@@ -24,13 +24,13 @@ class TrackMetaData:
 					'audio/x-wav; charset=binary' : self.id3Info}
 
 		#fileExtension = os.path.splitext(filepath.lower())[1]
+		filepath = filepath.replace('file://','')
 		try: fileDescription = m.file(filepath)
-		except: pass
+		except: fileDescription = "Invalid Format"
 		if filepath[:7] == 'http://' or filepath[:6] == 'mms://':
-			print("RADIO")
 			return self.radioInfo(filepath)
 		elif fileDescription in FILE_FORMATS:
-			filepath = filepath.replace('%5B','[').replace('%5D',']').replace('file://','').replace('%25', '%').replace('%23', '#')
+			filepath = filepath.replace('%5B','[').replace('%5D',']').replace('%25', '%').replace('%23', '#')
 			if os.path.exists(filepath):
 				return options[fileDescription](filepath)
 			else:
