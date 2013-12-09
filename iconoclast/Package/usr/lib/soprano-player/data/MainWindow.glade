@@ -102,6 +102,14 @@
                         <accelerator key="r" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                     </child>
+                    <child>
+                      <object class="GtkCheckMenuItem" id="menu-autopop">
+                        <property name="can_focus">False</property>
+                        <property name="tooltip_text" translatable="yes">Populate Automatically When Playlist is Empty</property>
+                        <property name="label">Auto Populate</property>
+                        <accelerator key="f" signal="activate" modifiers="GDK_CONTROL_MASK"/>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
@@ -188,7 +196,7 @@
             <property name="position">1</property>
             <child>
               <object class="GtkVBox" id="box-explorer">
-                <property name="width_request">200</property>
+                <property name="width_request">220</property>
                 <property name="can_focus">False</property>
                 <property name="border_width">12</property>
                 <property name="spacing">12</property>

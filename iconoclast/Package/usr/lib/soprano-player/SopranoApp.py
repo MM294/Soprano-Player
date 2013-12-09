@@ -33,7 +33,7 @@ class SopranoApp:
 		#Global Variables (keep to a minimum)
 		self.settings = settings.IconoSettings(sopranoGlobals.SETTINGS_DATA)
 		self.taglookup = TrackMetaData()
-		self.seekingnow = False		
+		self.seekingnow = False	
 		#load settings
 		self.currentview, self.winwidth, self.winheight, self.defaultexplorer, self.shuffle, self.repeat, self.showtrayicon, self.closetotray = self.settings.get_settings()
 
@@ -113,6 +113,8 @@ class SopranoApp:
 		#menuaddradio.connect('activate', lambda x: self.delFolderExplorer(('Video','/media/Media/Videos')))
 		menuaddradio.connect('activate', self.aRadio.addStationDialog)
 
+		self.menuautopop = self.builder.get_object('menu-autopop')
+
 		#playing Toolbar
 		self.toolnext = self.builder.get_object('btn-next')
 		self.toolnext.connect('clicked', self.play_next)
@@ -165,7 +167,7 @@ class SopranoApp:
 
 		#combobox
 		self.hCombo = HeaderedComboBox()
-		self.hCombo.connect("changed", self.on_name_combo_changed)		
+		self.hCombo.connect("changed", self.on_name_combo_changed)
 
 		self.builder.get_object('box-combo-explorer').add(self.hCombo)
 		
@@ -241,7 +243,7 @@ class SopranoApp:
 		self.iconoListView.save_shelf(sopranoGlobals.TREE_DATA)
 		Gtk.main_quit()
 
-	def addFolderExplorer(self, station):		
+	def addFolderExplorer(self, station):
 		explorer = IconoTreeFile(station[1], sopranoGlobals.FILE_FORMATS)
 		audioFolderlist = settings.IconoPrefs(sopranoGlobals.EXPLORER_DATA)
 		audioFolderlist.add_radio(station)
@@ -284,7 +286,7 @@ class SopranoApp:
 		self.setup_explorer_page(self.notebook, self.medialib.get_sw(), self.hCombo, [self.notebook.get_n_pages(), 0, "<b>Library</b>", sopranoGlobals.USERSPB])
 
 		self.notebook.set_current_page(self.defaultexplorer)
-		self.hCombo.set_active(self.defaultexplorer)		
+		self.hCombo.set_active(self.defaultexplorer)
 
 	def setup_explorer_page(self, notebook, widget, combo, arglist, insertHere=-1):
 		combo.add_entry(arglist[0], arglist[1], arglist[2], arglist[3], insertHere)
@@ -408,8 +410,17 @@ class SopranoApp:
 			return
 		for x in range(0, listlength):
 			#if there on the last track, and they press next without repeat enabled, do nothing
-			if x == listlength-1 and not(self.repeat) and widget == self.toolnext:
-				break
+			if x == listlength-1 and not(self.repeat):# and widget == self.toolnext:
+				if self.menuautopop.get_active() == True:
+					self.SopranoDB.cursor.execute("SELECT Url FROM Songs ORDER BY RANDOM() LIMIT 2;")
+					rows = self.SopranoDB.cursor.fetchall()
+					if len(rows) != 0:
+						for item in rows:
+							self.iconoListView.add_row(item[0],self.iconoListView.return_model(),False)
+					else:
+						break
+				else:
+					break
 			#if the last track finished without repeat enabled, stop playing
 			elif x == listlength-1 and not(self.repeat) and widget != self.toolnext:
 				GObject.idle_add(self.stop_play)
