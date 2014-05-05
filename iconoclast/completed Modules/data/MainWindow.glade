@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.16.1 -->
 <interface>
-  <!-- interface-requires gtk+ 3.0 -->
+  <requires lib="gtk+" version="3.10"/>
   <object class="GtkAccelGroup" id="accelgroup1"/>
   <object class="GtkAdjustment" id="adjustment1">
     <property name="upper">100</property>
@@ -16,26 +17,6 @@
     <property name="can_focus">False</property>
     <property name="icon_name">folder-remote</property>
   </object>
-  <object class="GtkListStore" id="liststore1">
-    <columns>
-      <!-- column-name playListMark -->
-      <column type="gchararray"/>
-      <!-- column-name trackListStore -->
-      <column type="gint"/>
-      <!-- column-name titleListStore -->
-      <column type="gchararray"/>
-      <!-- column-name artistListStore -->
-      <column type="gchararray"/>
-      <!-- column-name albumListStore -->
-      <column type="gchararray"/>
-      <!-- column-name lengthListStore -->
-      <column type="gchararray"/>
-      <!-- column-name genreListStore -->
-      <column type="gchararray"/>
-      <!-- column-name pathListStore -->
-      <column type="gchararray"/>
-    </columns>
-  </object>
   <object class="GtkWindow" id="win-main">
     <property name="can_focus">False</property>
     <property name="title">Soprano Audio Player</property>
@@ -45,8 +26,9 @@
       <group name="accelgroup1"/>
     </accel-groups>
     <child>
-      <object class="GtkVBox" id="vbox1">
+      <object class="GtkBox" id="vbox1">
         <property name="can_focus">False</property>
+		<property name="orientation">vertical</property>
         <child>
           <object class="GtkMenuBar" id="menubar">
             <property name="can_focus">False</property>
@@ -191,11 +173,13 @@
           </packing>
         </child>
         <child>
-          <object class="GtkHPaned" id="pan-main">
+          <object class="GtkPaned" id="pan-main">
+			<property name="orientation">horizontal</property>
             <property name="can_focus">True</property>
             <property name="position">1</property>
             <child>
-              <object class="GtkVBox" id="box-explorer">
+              <object class="GtkBox" id="box-explorer">
+				<property name="orientation">vertical</property>
                 <property name="width_request">220</property>
                 <property name="can_focus">False</property>
                 <property name="border_width">12</property>
@@ -212,7 +196,8 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkHButtonBox" id="box-combo-explorer">
+                  <object class="GtkButtonBox" id="box-combo-explorer">
+					<property name="orientation">horizontal</property>
                     <property name="can_focus">False</property>
                     <child>
                       <placeholder/>
@@ -231,12 +216,14 @@
               </packing>
             </child>
             <child>
-              <object class="GtkVBox" id="vbox2">
+              <object class="GtkBox" id="vbox2">
                 <property name="can_focus">False</property>
                 <property name="border_width">12</property>
                 <property name="spacing">12</property>
+				<property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkHBox" id="box-trkinfo">
+                  <object class="GtkBox" id="box-trkinfo">
+					<property name="orientation">horizontal</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="spacing">16</property>
@@ -262,12 +249,14 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkVBox" id="vbox4">
+                      <object class="GtkBox" id="vbox4">
+						<property name="orientation">vertical</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="spacing">6</property>
                         <child>
-                          <object class="GtkHBox" id="hbox5">
+                          <object class="GtkBox" id="hbox5">
+							<property name="orientation">horizontal</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <child>
@@ -320,7 +309,8 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkHBox" id="hbox8">
+                          <object class="GtkBox" id="hbox8">
+							<property name="orientation">horizontal</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <child>
@@ -343,15 +333,18 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkHBox" id="box-ctrl-panel">
+                          <object class="GtkBox" id="box-ctrl-panel">
+							<property name="orientation">horizontal</property>
                             <property name="can_focus">False</property>
                             <property name="spacing">12</property>
                             <child>
-                              <object class="GtkVBox" id="box-ctrl-buttons-1">
+                              <object class="GtkBox" id="box-ctrl-buttons-1">
+								<property name="orientation">vertical</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <child>
-                                  <object class="GtkHBox" id="box-ctrl-buttons-2">
+                                  <object class="GtkBox" id="box-ctrl-buttons-2">
+									<property name="orientation">horizontal</property>
                                     <property name="can_focus">False</property>
                                     <property name="spacing">6</property>
                                     <child>
@@ -449,7 +442,8 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkHBox" id="box-slider">
+                              <object class="GtkBox" id="box-slider">
+								<property name="orientation">horizontal</property>
                                 <property name="can_focus">False</property>
                                 <property name="spacing">6</property>
                                 <child>
@@ -468,7 +462,8 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkHScale" id="scl-position">
+                                  <object class="GtkScale" id="scl-position">
+									<property name="orientation">horizontal</property>
                                     <property name="visible">True</property>
                                     <property name="sensitive">False</property>
                                     <property name="can_focus">True</property>
@@ -521,6 +516,18 @@
 audio-volume-high
 audio-volume-low
 audio-volume-medium</property>
+                                <child internal-child="plus_button">
+                                  <object class="GtkButton" id="volumebutton-plus_button1">
+                                    <property name="can_focus">False</property>
+                                    <property name="receives_default">False</property>
+                                  </object>
+                                </child>
+                                <child internal-child="minus_button">
+                                  <object class="GtkButton" id="volumebutton-minus_button1">
+                                    <property name="can_focus">False</property>
+                                    <property name="receives_default">False</property>
+                                  </object>
+                                </child>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
@@ -554,7 +561,8 @@ audio-volume-medium</property>
                   <placeholder/>
                 </child>
                 <child>
-                  <object class="GtkHButtonBox" id="box-btn-tracklist">
+                  <object class="GtkButtonBox" id="box-btn-tracklist">
+					<property name="orientation">horizontal</property>
                     <property name="can_focus">False</property>
                     <property name="homogeneous">True</property>
                     <property name="layout_style">spread</property>
@@ -565,7 +573,8 @@ audio-volume-medium</property>
                         <property name="has_tooltip">True</property>
                         <property name="tooltip_text" translatable="yes">Shuffle the playlist</property>
                         <child>
-                          <object class="GtkHBox" id="hbox4">
+                          <object class="GtkBox" id="hbox4">
+							<property name="orientation">horizontal</property>
                             <property name="can_focus">False</property>
                             <child>
                               <object class="GtkImage" id="img-shuffle">
@@ -605,7 +614,8 @@ audio-volume-medium</property>
                         <property name="has_tooltip">True</property>
                         <property name="tooltip_text" translatable="yes">Play all tracks endlessly</property>
                         <child>
-                          <object class="GtkHBox" id="hbox7">
+                          <object class="GtkBox" id="hbox7">
+							<property name="orientation">horizontal</property>
                             <property name="can_focus">False</property>
                             <child>
                               <object class="GtkImage" id="img-repeat">
@@ -645,7 +655,8 @@ audio-volume-medium</property>
                         <property name="has_tooltip">True</property>
                         <property name="tooltip_text" translatable="yes">Clear the playlist</property>
                         <child>
-                          <object class="GtkHBox" id="hbox6">
+                          <object class="GtkBox" id="hbox6">
+							<property name="orientation">horizontal</property>
                             <property name="can_focus">False</property>
                             <child>
                               <object class="GtkImage" id="img-shuffle2">
@@ -736,5 +747,25 @@ audio-volume-medium</property>
         </child>
       </object>
     </child>
+  </object>
+  <object class="GtkListStore" id="liststore1">
+    <columns>
+      <!-- column-name playListMark -->
+      <column type="gchararray"/>
+      <!-- column-name trackListStore -->
+      <column type="gint"/>
+      <!-- column-name titleListStore -->
+      <column type="gchararray"/>
+      <!-- column-name artistListStore -->
+      <column type="gchararray"/>
+      <!-- column-name albumListStore -->
+      <column type="gchararray"/>
+      <!-- column-name lengthListStore -->
+      <column type="gchararray"/>
+      <!-- column-name genreListStore -->
+      <column type="gchararray"/>
+      <!-- column-name pathListStore -->
+      <column type="gchararray"/>
+    </columns>
   </object>
 </interface>
