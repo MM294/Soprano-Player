@@ -16,6 +16,7 @@ LIBRARY_DATA = os.path.join(CONFIGDIR, 'library.icono')
 
 DATADIR = '/usr/lib/soprano-player/data'
 
+
 __tempLabel = Gtk.Label()
 PLACEHOLDER =  GdkPixbuf.Pixbuf().new_from_file(os.path.join(DATADIR ,'crashbit-soprano.png'))
 

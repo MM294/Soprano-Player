@@ -66,6 +66,9 @@ class SopranoApp:
 		self.window = self.builder.get_object('win-main')
 		self.window.set_default_size(self.winwidth,self.winheight)
 		self.window.connect('delete-event', self.pre_exit)
+
+		hb = self.builder.get_object('header-bar')
+		self.window.set_titlebar(hb)
 		
 		#radiowindow
 		self.aRadio = IconoRadio()
@@ -137,6 +140,7 @@ class SopranoApp:
 
 		#Text Displays
 		self.titleText = self.builder.get_object('lbl-trkTitle')
+		#self.titleText.connect('size-allocate', lambda label, size: label.set_size_request(size.width - 1, -1))
 		self.infoText = self.builder.get_object('lbl-trkMisc')
 		self.lengthLabel = self.builder.get_object('lbl-length')
 		self.elapsedLabel = self.builder.get_object('lbl-elapsed')
@@ -351,12 +355,13 @@ class SopranoApp:
 			if not(self.seekingnow):
 				self.toolSeekBar.set_value(self.player.track_percent())
 			self.elapsedLabel.set_text(self.player.get_trackposition())
-			self.lengthLabel.set_text('/' + self.player.get_tracklength())
+			#self.lengthLabel.set_text('/' + self.player.get_tracklength())
+			self.lengthLabel.set_text(self.player.get_tracklength())
 		return True
 
 	def update_labels(self, title, artist, album):
 		self.titleText.set_text(title)
-		self.infoText.set_text("By " + artist + " from " + album)
+		self.infoText.set_text("By %s from %s" % (artist, album))
 
 	def clear_labels(self):
 		self.titleText.set_text("Soprano Audio Player")
@@ -376,7 +381,7 @@ class SopranoApp:
 		coverFetch = getCover(artist, album, filepath)
 		img = coverFetch.run()
 		coverart = self.builder.get_object('img-cover')
-		coverart.set_from_pixbuf(img.scale_simple(100,100,GdkPixbuf.InterpType.BILINEAR))
+		coverart.set_from_pixbuf(img.scale_simple(50,50,GdkPixbuf.InterpType.BILINEAR))
 
 	#Play Handlers
 	def on_message(self, bus, message):
