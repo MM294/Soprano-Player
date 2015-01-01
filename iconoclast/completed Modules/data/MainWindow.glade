@@ -648,3 +648,53 @@ audio-volume-medium</property>
     </columns>
   </object>
 </interface>
+<interface>
+ <menu id='app-menu'>
+	<section>
+		<item>
+			<attribute name='label' translatable="yes">Preferences</attribute>
+			<attribute name='action'>app.new</attribute>
+			<attribute name='accel'>&lt;Primary&gt;n</attribute>
+		</item>
+		<item>
+			<attribute name='label' translatable="yes">Add Radio</attribute>
+			<attribute name='action'>app.new</attribute>
+			<attribute name='accel'>&lt;Primary&gt;n</attribute>
+		</item>
+		<item>
+			<attribute name='label' translatable="yes">Auto Populate</attribute>
+			<attribute name='action'>app.new</attribute>
+			<attribute name='accel'>&lt;Primary&gt;n</attribute>
+		</item>
+	</section>
+	<section>
+		<item>
+			<attribute name='label' translatable="yes">Full</attribute>
+			<attribute name='action'>app.new</attribute>
+			<attribute name='accel'>&lt;Primary&gt;n</attribute>
+		</item>
+		<item>
+			<attribute name='label' translatable="yes">Playlist</attribute>
+			<attribute name='action'>app.new</attribute>
+			<attribute name='accel'>&lt;Primary&gt;n</attribute>
+		</item>
+		<item>
+			<attribute name='label' translatable="yes">Mini</attribute>
+			<attribute name='action'>app.new</attribute>
+			<attribute name='accel'>&lt;Primary&gt;n</attribute>
+		</item>
+	</section>
+	<section>
+		<item>
+			<attribute name='label' translatable="yes">About</attribute>
+			<attribute name='action'>app.new</attribute>
+			<attribute name='accel'>&lt;Primary&gt;n</attribute>
+		</item>
+		<item>
+			<attribute name='label' translatable="yes">Quit</attribute>
+			<attribute name='action'>app.new</attribute>
+			<attribute name='accel'>&lt;Primary&gt;n</attribute>
+		</item>
+	</section>
+ </menu>
+</interface>
