@@ -1,6 +1,6 @@
 #!/usr/bin/python
 import sqlite3,os,threading
-import scandir
+from libs import scandir
 
 from music.tagreading import TrackMetaData
 
