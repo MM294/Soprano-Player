@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import sqlite3,os,threading
+import scandir
 
 from music.tagreading import TrackMetaData
 
@@ -38,7 +39,7 @@ class MusicDB(threading.Thread):
 		for libraryfolder in self.libraryfolders:
 			libraryfolder = libraryfolder.replace('file://','').replace('%20',' ') #simple but is a bit slow
 			if os.path.isdir(libraryfolder):
-				for root, dirs, files in os.walk(libraryfolder):
+				for root, dirs, files in scandir.walk(libraryfolder):
 					for name in files:
 						metadata = trackparser.getTrackType(os.path.join(root, name))
 						if metadata != False:
