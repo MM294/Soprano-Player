@@ -8,31 +8,43 @@ import os.path, magic
 from settings import sopranoGlobals, settings
 
 
-#FILE_FORMATS = {'.mp3','.ogg','.oga','.wma','.flac','.m4a','.mp4','.aac'}
-FILE_FORMATS = {'.audio/mp4; charset=binary','audio/mpeg; charset=binary','application/ogg; charset=binary','audio/x-flac; charset=binary','audio/x-wav; charset=binary','audio/x-ms-asf; charset=binary','video/x-ms-asf; charset=binary'}
+FILE_FORMATS = {'.mp3','.ogg','.oga','.wma','.flac','.m4a','.mp4','.aac'}
+#FILE_FORMATS = {'.audio/mp4; charset=binary','audio/mpeg; charset=binary','application/ogg; charset=binary','audio/x-flac; charset=binary','audio/x-wav; charset=binary','audio/x-ms-asf; charset=binary','video/x-ms-asf; charset=binary','application/octet-stream; charset=binary'}
+#Including octet-stream to work around magic not correctly identifying mp3 with image metadata
 
 class TrackMetaData:
 	def getTrackType(self, filepath):
 		m = magic.open(magic.MAGIC_MIME)
 		m.load()
-		options = {	'application/ogg; charset=binary' : self.oggInfo,
-					'.audio/mp4; charset=binary' : self.m4aInfo,
-					'audio/mpeg; charset=binary' : self.id3Info,
-					'audio/x-flac; charset=binary' : self.flacInfo,
-					'audio/x-ms-asf; charset=binary' : self.wmaInfo,
-					'video/x-ms-asf; charset=binary' : self.wmaInfo,
-					'audio/x-wav; charset=binary' : self.id3Info}
+#		options = {	'application/ogg; charset=binary' : self.oggInfo,
+#					'.audio/mp4; charset=binary' : self.m4aInfo,
+#					'audio/mpeg; charset=binary' : self.id3Info,
+#					'audio/x-flac; charset=binary' : self.flacInfo,
+#					'audio/x-ms-asf; charset=binary' : self.wmaInfo,
+#					'video/x-ms-asf; charset=binary' : self.wmaInfo,
+#					'audio/x-wav; charset=binary' : self.id3Info}
 
-		#fileExtension = os.path.splitext(filepath.lower())[1]
+		options = {	'.ogg' : self.oggInfo,
+					'.oga' : self.oggInfo,
+					'.mp4' : self.m4aInfo,
+					'.m4a' : self.m4aInfo,
+					'.mp3' : self.id3Info,
+					'.flac' : self.flacInfo,
+					'.wma' : self.wmaInfo,
+					'.asf' : self.wmaInfo,
+					'.wav' : self.id3Info}
+
+		fileExtension = os.path.splitext(filepath.lower())[1]
 		filepath = filepath.replace('file://','')
-		try: fileDescription = m.file(filepath)
-		except: fileDescription = "Invalid Format"
+		#try: fileDescription = m.file(filepath)
+		#except: fileDescription = "Invalid Format"
 		if filepath[:7] == 'http://' or filepath[:6] == 'mms://':
 			return self.radioInfo(filepath)
-		elif fileDescription in FILE_FORMATS:
+		elif fileExtension in FILE_FORMATS:
 			filepath = filepath.replace('%5B','[').replace('%5D',']').replace('%25', '%').replace('%23', '#')
 			if os.path.exists(filepath):
-				return options[fileDescription](filepath)
+				return options[fileExtension](filepath)
+				#return options[fileDescription](filepath)
 			else:
 				return False
 		elif filepath[:7] == 'cdda://':
