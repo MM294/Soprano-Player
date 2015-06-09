@@ -2,7 +2,7 @@ import os.path
 from settings import sopranoGlobals
 from gi.repository import Gtk;
 
-def aboutBoxShow(widget, parent):
+def aboutBoxShow(widget, parent, parameter=None):
     """ Show an about dialog box """
     aboutBox = Gtk.AboutDialog(program_name='Soprano Media Player')
 

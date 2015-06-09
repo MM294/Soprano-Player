@@ -422,7 +422,7 @@
               </object>
               <packing>
                 <property name="expand">False</property>
-                <property name="fill">False</property>
+                <property name="fill">True</property>
                 <property name="position">0</property>
               </packing>
             </child>
@@ -465,9 +465,8 @@
         <property name="position">5</property>
       </packing>
     </child>
-    <child>
+    <!--<child>
       <object class="GtkMenuToolButton">
-      <!--<object class="GtkToolItem">-->
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">toolbutton1</property>
@@ -582,7 +581,7 @@
         <property name="pack_type">end</property>
         <property name="position">7</property>
       </packing>
-    </child>
+    </child>-->
     <child>
       <object class="GtkVolumeButton" id="btn-volume">
         <property name="visible">True</property>
@@ -651,46 +650,46 @@ audio-volume-medium</property>
 	<section>
 		<item>
 			<attribute name='label' translatable="yes">Preferences</attribute>
-			<attribute name='action'>app.new</attribute>
+			<attribute name='action'>app.prefs</attribute>
 			<attribute name='accel'>&lt;Primary&gt;n</attribute>
 		</item>
 		<item>
 			<attribute name='label' translatable="yes">Add Radio</attribute>
-			<attribute name='action'>app.new</attribute>
+			<attribute name='action'>app.radio</attribute>
 			<attribute name='accel'>&lt;Primary&gt;n</attribute>
 		</item>
 		<item>
 			<attribute name='label' translatable="yes">Auto Populate</attribute>
-			<attribute name='action'>app.new</attribute>
+			<attribute name='action'>app.autopop</attribute>
 			<attribute name='accel'>&lt;Primary&gt;n</attribute>
 		</item>
 	</section>
 	<section>
 		<item>
 			<attribute name='label' translatable="yes">Full</attribute>
-			<attribute name='action'>app.new</attribute>
+			<attribute name='action'>app.view-full</attribute>
 			<attribute name='accel'>&lt;Primary&gt;n</attribute>
 		</item>
 		<item>
 			<attribute name='label' translatable="yes">Playlist</attribute>
-			<attribute name='action'>app.new</attribute>
+			<attribute name='action'>app.view-playlist</attribute>
 			<attribute name='accel'>&lt;Primary&gt;n</attribute>
 		</item>
 		<item>
 			<attribute name='label' translatable="yes">Mini</attribute>
-			<attribute name='action'>app.new</attribute>
+			<attribute name='action'>app.view-mini</attribute>
 			<attribute name='accel'>&lt;Primary&gt;n</attribute>
 		</item>
 	</section>
 	<section>
 		<item>
 			<attribute name='label' translatable="yes">About</attribute>
-			<attribute name='action'>app.new</attribute>
+			<attribute name='action'>app.about</attribute>
 			<attribute name='accel'>&lt;Primary&gt;n</attribute>
 		</item>
 		<item>
 			<attribute name='label' translatable="yes">Quit</attribute>
-			<attribute name='action'>app.new</attribute>
+			<attribute name='action'>app.quit</attribute>
 			<attribute name='accel'>&lt;Primary&gt;n</attribute>
 		</item>
 	</section>

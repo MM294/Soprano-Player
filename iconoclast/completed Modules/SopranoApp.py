@@ -70,6 +70,7 @@ class SopranoApp(Gtk.Application):
 		self.window = self.builder.get_object('win-main')
 		self.window.set_default_size(self.winwidth,self.winheight)
 		self.window.connect('delete-event', self.pre_exit)
+		self.window.set_wmclass ("Soprano Player", "Soprano Player")
 		app.add_window(self.window)
 
 
@@ -99,30 +100,67 @@ class SopranoApp(Gtk.Application):
 		self.update_tray_icon(self.showtrayicon)
 
 
-		#View Menu#
-		menuvfull = self.builder.get_object('menu-mode-full')
-		menuvfull.connect('activate', self.to_full_mode)
-		menuvmini = self.builder.get_object('menu-mode-mini')
-		menuvmini.connect('activate', self.to_mini_mode)
-		menuvplist = self.builder.get_object('menu-mode-playlist')
-		menuvplist.connect('activate', self.to_playlist_mode)
+		# View Menu#
+		#menuvfull = self.builder.get_object('menu-mode-full')
+		#menuvfull.connect('activate', self.to_full_mode)
+		#menuvmini = self.builder.get_object('menu-mode-mini')
+		#menuvmini.connect('activate', self.to_mini_mode)
+		#menuvplist = self.builder.get_object('menu-mode-playlist')
+		#menuvplist.connect('activate', self.to_playlist_mode)
 
-		#Quit, About Menus
-		menuaqt = self.builder.get_object('menu-quit')
-		menuaqt.connect('activate',self.on_exit)
-		menuabt = self.builder.get_object('menu-about')
-		menuabt.connect('activate', aboutBoxShow, self.window)
+		# Quit, About Menus
+		#menuaqt = self.builder.get_object('menu-quit')
+		#menuaqt.connect('activate',self.on_exit)
+		#menuabt = self.builder.get_object('menu-about')
+		#menuabt.connect('activate', aboutBoxShow, self.window)
 
 		#Edit Menu#
-		menuaddfolder = self.builder.get_object('menu-folderadd')
+		#menuaddfolder = self.builder.get_object('menu-folderadd')
 		#menuaddfolder.connect('activate', lambda x: self.addFolderExplorer(('Video','/media/Media/Videos')))
-		menuaddfolder.connect('activate', self.show_pref_win)
+		#menuaddfolder.connect('activate', self.show_pref_win)
 
-		menuaddradio = self.builder.get_object('menu-radioadd')
+		#menuaddradio = self.builder.get_object('menu-radioadd')
 		#menuaddradio.connect('activate', lambda x: self.delFolderExplorer(('Video','/media/Media/Videos')))
-		menuaddradio.connect('activate', self.aRadio.addStationDialog)
+		#menuaddradio.connect('activate', self.aRadio.addStationDialog)
 
-		self.menuautopop = self.builder.get_object('menu-autopop')
+		#self.menuautopop = self.builder.get_object('menu-autopop')
+
+		# Build the Gnome App Menu
+		mainmenu = self.builder.get_object('app-menu')
+		self.set_app_menu(mainmenu)
+
+		prefs_action = Gio.SimpleAction.new("prefs", None)
+		prefs_action.connect("activate", self.show_pref_win)
+		self.add_action(prefs_action)
+
+		radio_action = Gio.SimpleAction.new("radio", None)
+		radio_action.connect("activate", self.aRadio.addStationDialog)
+		self.add_action(radio_action)
+
+		self.menuautopop = False
+		autopop_action = Gio.SimpleAction.new("autopop", None)
+		autopop_action.connect("activate", self.toggleAutoPop)
+		self.add_action(autopop_action)
+
+		view_full_action = Gio.SimpleAction.new("view-full", None)
+		view_full_action.connect("activate", self.to_full_mode)
+		self.add_action(view_full_action)
+
+		view_playlist_action = Gio.SimpleAction.new("view-playlist", None)
+		view_playlist_action.connect("activate", self.to_playlist_mode)
+		self.add_action(view_playlist_action)
+
+		view_mini_action = Gio.SimpleAction.new("view-mini", None)
+		view_mini_action.connect("activate", self.to_mini_mode)
+		self.add_action(view_mini_action)
+
+		about_action = Gio.SimpleAction.new("about", None)
+		about_action.connect("activate", aboutBoxShow, self.window)
+		self.add_action(about_action)
+
+		quit_action = Gio.SimpleAction.new("quit", None)
+		quit_action.connect("activate", self.on_exit)
+		self.add_action(quit_action)
 
 		#playing Toolbar
 		self.toolnext = self.builder.get_object('btn-next')
@@ -193,6 +231,9 @@ class SopranoApp(Gtk.Application):
 		#Notebook
 		self.notebook = self.builder.get_object('notebook-explorer')
 
+	def toggleAutoPop(self, widget=None, parameter=None):
+		self.menuautopop = not self.menuautopop
+
 	def update_tray_icon(self, enabled=True):
 		if enabled:
 			try:	self.tray.myStatusIcon.set_visible(True)
@@ -202,7 +243,7 @@ class SopranoApp(Gtk.Application):
 			except: self.tray.ind.set_status(AppIndicator3.IndicatorStatus.PASSIVE)
 			
 
-	def show_pref_win(self, widget=None):
+	def show_pref_win(self, widget=None, parameter=None):
 		newWin = SopranoPrefWin(self.showtrayicon, self.closetotray, self.window)
 		newWin.win.set_transient_for(self.window)
 		newWin.win.show_all()
@@ -238,7 +279,7 @@ class SopranoApp(Gtk.Application):
 		else:
 			self.on_exit(widget)
 
-	def on_exit(self, widget):
+	def on_exit(self, widget, parameter=None):
 		#hide window and tray icon first to give appearence of instant close
 		self.window.hide()
 		self.tray = None
@@ -251,7 +292,7 @@ class SopranoApp(Gtk.Application):
 			winwidth = self.winwidth
 		self.settings.write_settings([self.currentview, winwidth, winheight ,self.notebook.get_current_page()+1, self.shuffle, self.repeat, self.showtrayicon, self.closetotray])
 		self.iconoListView.save_shelf(sopranoGlobals.TREE_DATA)
-		Gtk.main_quit()
+		sys.exit(0)
 
 	def addFolderExplorer(self, station):
 		explorer = IconoTreeFile(station[1], sopranoGlobals.FILE_FORMATS)
@@ -322,7 +363,7 @@ class SopranoApp(Gtk.Application):
 		self.iconoListView.set_playmark(row)
 
 	#View Menu Handlers
-	def to_full_mode(self, unused=None):
+	def to_full_mode(self, unused=None, parameter=None):
 		self.window.resize(self.winwidth,self.winheight)
 		self.builder.get_object('pan-main').get_child1().show()
 		self.builder.get_object('statusbar').show()
@@ -330,7 +371,7 @@ class SopranoApp(Gtk.Application):
 		self.iconoListView.get_sw().show()
 		self.currentview = 'full'
 
-	def to_mini_mode(self, unused=None):
+	def to_mini_mode(self, unused=None, parameter=None):
 		self.builder.get_object('pan-main').get_child1().hide()
 		self.builder.get_object('statusbar').hide()
 		self.builder.get_object('box-btn-tracklist').hide()
@@ -338,7 +379,7 @@ class SopranoApp(Gtk.Application):
 		self.window.resize(600, 150)
 		self.currentview = 'mini'
 
-	def to_playlist_mode(self, unused=None):
+	def to_playlist_mode(self, unused=None, parameter=None):
 		self.to_full_mode(None)	
 		self.window.resize(self.winwidth, self.winheight)
 		self.builder.get_object('pan-main').get_child1().hide()
@@ -422,7 +463,7 @@ class SopranoApp(Gtk.Application):
 		for x in range(0, listlength):
 			#if there on the last track, and they press next without repeat enabled, do nothing
 			if x == listlength-1 and not(self.repeat):# and widget == self.toolnext:
-				if self.menuautopop.get_active() == True:
+				if self.menuautopop == True:
 					self.SopranoDB.cursor.execute("SELECT Url FROM Songs ORDER BY RANDOM() LIMIT 2;")
 					rows = self.SopranoDB.cursor.fetchall()
 					if len(rows) != 0:

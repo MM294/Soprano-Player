@@ -119,7 +119,7 @@ class IconoRadio():
 		res = parser.parse(url, False)
 	#######################
 
-	def addStationDialog(self, widget=None):
+	def addStationDialog(self, widget=None, parameter=None):
 		dialog = Gtk.Dialog(' ',
 		                    None,
 						    Gtk.DialogFlags.MODAL | 
