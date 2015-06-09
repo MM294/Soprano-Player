@@ -1,9 +1,11 @@
 --High Prio
 Playlists, will improve net radio too - can pass for netradio now, 
+Slow startup when Network tracks in playlist
 
 --Medium Prio
 sort by album and tracknum when tracks added
 Smarter Column Sorting
+
 
 --Low Prio
 lookup CD metadata
@@ -25,3 +27,4 @@ Single Instance - DONE
 Preferences - DONE
 MPRIS/Sound Menu support - DONE
 port to python3 - DONE except AudioCD module, though cant be finished until mutagen is ported to python3 
+Switch to GtkApplication

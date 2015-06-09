@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import gi
 gi.require_version('Gst', '1.0')
-from gi.repository import Gtk, GdkPixbuf, GObject, Notify, Gst# about 8.5 Mb memory used here
+from gi.repository import Gtk, GdkPixbuf, GObject, Notify, Gst, Gio# about 8.5 Mb memory used here
 try:
 	from gi.repository import AppIndicator3
 except:
@@ -28,8 +28,12 @@ from gui.prefs import SopranoPrefWin
 from gui.trayicon import IconoTray
 from gui.medialibrary import IconoMediaLibrary
 
-class SopranoApp:
+class SopranoApp(Gtk.Application):
 	def __init__(self):
+		Gtk.Application.__init__(self, application_id="org.gnome.soprano", flags=Gio.ApplicationFlags.FLAGS_NONE)
+		self.connect("activate", self.activateCb)
+
+	def activateCb(self, app):
 		#Global Variables (keep to a minimum)
 		self.settings = settings.IconoSettings(sopranoGlobals.SETTINGS_DATA)
 		self.taglookup = TrackMetaData()
@@ -66,6 +70,8 @@ class SopranoApp:
 		self.window = self.builder.get_object('win-main')
 		self.window.set_default_size(self.winwidth,self.winheight)
 		self.window.connect('delete-event', self.pre_exit)
+		app.add_window(self.window)
+
 
 		hb = self.builder.get_object('header-bar')
 		self.window.set_titlebar(hb)
@@ -510,10 +516,12 @@ class SopranoApp:
 			toolplayimg.set_from_icon_name('media-playback-pause', Gtk.IconSize.LARGE_TOOLBAR)
 			GObject.idle_add(self.cover_update)
 import sys
-import fcntl
-LOCK_PATH = os.path.join(os.path.expanduser('~'), '.sopranolock')
-fd = open(LOCK_PATH, 'w')
-fcntl.lockf(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
-app = SopranoApp()
+#import fcntl
+#LOCK_PATH = os.path.join(os.path.expanduser('~'), '.sopranolock')
+#fd = open(LOCK_PATH, 'w')
+#fcntl.lockf(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+
 if __name__ == '__main__':
-	Gtk.main()
+	app = SopranoApp()
+	app.run(sys.argv)
+	#Gtk.main()
