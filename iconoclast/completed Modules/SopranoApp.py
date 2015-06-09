@@ -523,5 +523,5 @@ import sys
 
 if __name__ == '__main__':
 	app = SopranoApp()
-	app.run(sys.argv)
-	#Gtk.main()
+	exitCode = app.run(sys.argv)
+	sys.exit(exitCode)
