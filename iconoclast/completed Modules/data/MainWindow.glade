@@ -647,8 +647,6 @@ audio-volume-medium</property>
        <column type="gchararray"/>
     </columns>
   </object>
-</interface>
-<interface>
  <menu id='app-menu'>
 	<section>
 		<item>
