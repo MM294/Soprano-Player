@@ -55,14 +55,14 @@ class SopranoPrefWin:
 		separator1 = Gtk.Separator()
 		#Line 3
 		hbox = Gtk.HBox()
-		alabel = Gtk.Label("Show Tray Icon")
+		alabel = Gtk.Label(label="Show Tray Icon")
 		traycheckbox = Gtk.Switch()
 		traycheckbox.set_active(showtray)
 		hbox.pack_start(alabel, True, False, 0)
 		hbox.pack_end(traycheckbox, True, False, 0)
 		#Line 4
 		hbox2 = Gtk.HBox()
-		alabel2 = Gtk.Label("Close to Tray")
+		alabel2 = Gtk.Label(label="Close to Tray")
 		closecheckbox = Gtk.Switch()
 		closecheckbox.set_active(closeon)
 		hbox2.pack_start(alabel2, True, False, 0)
@@ -90,8 +90,8 @@ class SopranoPrefWin:
 		hbox = Gtk.HBox(spacing=8)
 		hbox.set_border_width(8)
 
-		label = Gtk.Label("Add Location")
-		warnlabel = Gtk.Label("Enter or select a location to add to the main window")
+		label = Gtk.Label(label="Add Location")
+		warnlabel = Gtk.Label(label="Enter or select a location to add to the main window")
 
 		vbox = Gtk.VBox(spacing=8)
 		vbox.set_border_width(8)

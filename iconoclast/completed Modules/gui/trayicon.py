@@ -12,10 +12,6 @@ class IconoTray:
 			self.ind = AppIndicator3.Indicator.new("Soprano2", iconname, AppIndicator3.IndicatorCategory.APPLICATION_STATUS)
 			self.ind.set_status(AppIndicator3.IndicatorStatus.ACTIVE)
 			self.ind.set_menu(self.menu)
-		else:
-			self.myStatusIcon = Gtk.StatusIcon()
-			self.myStatusIcon.set_from_icon_name(iconname)
-			self.myStatusIcon.connect('popup-menu', self.right_click_event_statusicon)
 	
 	def add_menu_item(self, command, title):
 		aMenuitem = Gtk.MenuItem()

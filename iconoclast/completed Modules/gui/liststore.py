@@ -2,7 +2,7 @@
 #init function needs rewrite too
 #(C) 2011 Mike Morley
 
-from gi.repository import Gtk, GdkPixbuf, Gdk, GObject
+from gi.repository import Gtk, GdkPixbuf, Gdk
 import os.path
 try: import cPickle as pickle
 except: import pickle

@@ -1,4 +1,4 @@
-from gi.repository import Gtk, GObject, GdkPixbuf, Gdk
+from gi.repository import Gtk, GLib, GdkPixbuf, Gdk
 from settings import sopranoGlobals
 import os.path
 
@@ -40,7 +40,7 @@ class IconoAudioCD():
 		treeview.connect('button_press_event', self.on_button_press)
 		treeview.connect('button_release_event', self.on_button_release)
 		self.defer_select=False
-		GObject.idle_add(lambda: self.refreshDiscs(treeview, self.device))
+		GLib.idle_add(lambda: self.refreshDiscs(treeview, self.device))
 
 	def on_right_click(self, widget, event):
 		if event.button == 3:

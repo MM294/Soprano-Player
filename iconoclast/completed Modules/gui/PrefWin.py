@@ -54,7 +54,7 @@ class PrefWin(Gtk.Window):
 		if exists == 0:
 			pic = Gtk.IconTheme.get_default().load_icon(icon, 32, Gtk.IconLookupFlags.FORCE_SIZE)
 			self.categorys.append([pic, name])
-			label = Gtk.Label(str(name))
+			label = Gtk.Label(label=str(name))
 			self.notebook.insert_page(widgetpage, label, -1)
 			self.notebook.show_all()
 			self.categorylist.append(name)
@@ -67,13 +67,13 @@ class PrefWin(Gtk.Window):
 
 """def main():
 	abox = Gtk.Box()
-	alabel = Gtk.Label("First Option!")
+	alabel = Gtk.Label(label="First Option!")
 	acheckbox = Gtk.Switch()
 	abox.pack_start(alabel, expand=True, fill=True, padding=5)
 	abox.pack_start(acheckbox, expand=True, fill=True, padding=5)
 
 	abox2 = Gtk.Box()
-	alabel2 = Gtk.Label("Second Option!")
+	alabel2 = Gtk.Label(label="Second Option!")
 	acheckbox2 = Gtk.Switch()
 	abox2.add(alabel2)
 	abox2.add(acheckbox2)
