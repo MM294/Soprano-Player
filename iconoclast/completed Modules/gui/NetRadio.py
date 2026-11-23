@@ -1,4 +1,6 @@
-from gi.repository import Gtk, GObject, GdkPixbuf, Gdk, TotemPlParser
+import gi
+gi.require_version('TotemPlParser', '1.0')
+from gi.repository import Gtk, GLib, GdkPixbuf, Gdk, TotemPlParser
 from settings import sopranoGlobals, settings
 
 class IconoRadio():
@@ -43,7 +45,7 @@ class IconoRadio():
 		self.treeview.connect('button-press-event', self.on_right_click)
 		self.treeview.connect("drag_data_get", self.drag_data_get_cb)
 		self.treeview.connect("drag_begin", self.drag_begin_cb)
-		GObject.idle_add(self.setupStations, stations)
+		GLib.idle_add(self.setupStations, stations)
 
 		self.playlisturl = None
 
@@ -131,8 +133,8 @@ class IconoRadio():
 		hbox = Gtk.HBox(spacing=8)
 		hbox.set_border_width(8)
 
-		label = Gtk.Label("Add Station")
-		warnlabel = Gtk.Label("")
+		label = Gtk.Label(label="Add Station")
+		warnlabel = Gtk.Label(label="")
 
 		vbox = Gtk.VBox(spacing=8)
 		vbox.set_border_width(8)

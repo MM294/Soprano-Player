@@ -1,8 +1,7 @@
 import gi
 gi.require_version('Gst', '1.0')
-from gi.repository import Gst, GObject
+from gi.repository import Gst
 #import gst
-GObject.threads_init()
 Gst.init(None)
 #Arguements for time in Nanoseconds have changed position,
 #for Gst 1.0 you must use self.player.query_duration(Gst.Format.TIME)[1]

@@ -1,7 +1,9 @@
 #!/usr/bin/python3
 import gi
 gi.require_version('Gst', '1.0')
-from gi.repository import Gtk, GdkPixbuf, GObject, Notify, Gst, Gio# about 8.5 Mb memory used here
+gi.require_version('Gtk', '3.0')
+gi.require_version('Notify', '0.7')
+from gi.repository import Gtk, GdkPixbuf, GLib, Notify, Gst, Gio# about 8.5 Mb memory used here
 try:
 	from gi.repository import AppIndicator3
 except:
@@ -70,7 +72,6 @@ class SopranoApp(Gtk.Application):
 		self.window = self.builder.get_object('win-main')
 		self.window.set_default_size(self.winwidth,self.winheight)
 		self.window.connect('delete-event', self.pre_exit)
-		self.window.set_wmclass ("Soprano Player", "Soprano Player")
 		app.add_window(self.window)
 
 
@@ -84,9 +85,10 @@ class SopranoApp(Gtk.Application):
 		self.player = MusicPlayer()
 		self.player.on_eos(self.on_message)
 		#media keys setup
-		self.mediakeys = mediakeys(self.play_prev, self.play_pause, self.play_next)
+		try: self.mediakeys = mediakeys(self.play_prev, self.play_pause, self.play_next)
+		except: print("Not running on xorg or gnome settings daemon missing, disabling media keys")
 
-		timer = GObject.timeout_add(500, self.update_time_items)
+		timer = GLib.timeout_add(500, self.update_time_items)
 
 		#trayicon
 		self.tray = IconoTray("soprano-player-tray") 
@@ -211,7 +213,7 @@ class SopranoApp(Gtk.Application):
 		vbox2.add(self.iconoListView.get_sw())
 		vbox2.reorder_child(self.iconoListView.get_sw(), 1)
 		if os.path.exists(sopranoGlobals.TREE_DATA):
-			GObject.idle_add(self.iconoListView.load_shelf, sopranoGlobals.TREE_DATA)
+			GLib.idle_add(self.iconoListView.load_shelf, sopranoGlobals.TREE_DATA)
 
 		#combobox
 		self.hCombo = HeaderedComboBox()
@@ -219,8 +221,8 @@ class SopranoApp(Gtk.Application):
 
 		self.builder.get_object('box-combo-explorer').add(self.hCombo)
 		
-		GObject.idle_add(self.setup_explorer)
-		GObject.idle_add(self.cover_update)
+		GLib.idle_add(self.setup_explorer)
+		GLib.idle_add(self.cover_update)
 		self.window.show_all()
 		if self.currentview == 'playlist':
 			menuvplist.set_active(True)
@@ -236,11 +238,15 @@ class SopranoApp(Gtk.Application):
 
 	def update_tray_icon(self, enabled=True):
 		if enabled:
-			try:	self.tray.myStatusIcon.set_visible(True)
-			except: self.tray.ind.set_status(AppIndicator3.IndicatorStatus.ACTIVE)
+			if hasattr(self.tray, 'myStatusIcon'):
+				self.tray.myStatusIcon.set_property('visible', True)
+			elif hasattr(self.tray, 'ind'):
+				self.tray.ind.set_status(AppIndicator3.IndicatorStatus.ACTIVE)
 		elif not enabled:
-			try:	self.tray.myStatusIcon.set_visible(False)
-			except: self.tray.ind.set_status(AppIndicator3.IndicatorStatus.PASSIVE)
+			if hasattr(self.tray, 'myStatusIcon'):
+				self.tray.myStatusIcon.set_property('visible', False)
+			elif hasattr(self.tray, 'ind'):
+				self.tray.ind.set_status(AppIndicator3.IndicatorStatus.PASSIVE)
 			
 
 	def show_pref_win(self, widget=None, parameter=None):
@@ -341,7 +347,7 @@ class SopranoApp(Gtk.Application):
 
 	def setup_explorer_page(self, notebook, widget, combo, arglist, insertHere=-1):
 		combo.add_entry(arglist[0], arglist[1], arglist[2], arglist[3], insertHere)
-		label = Gtk.Label(arglist[2])
+		label = Gtk.Label(label=arglist[2])
 		notebook.insert_page(widget, label, insertHere)
 		notebook.show_all()
 
@@ -359,7 +365,7 @@ class SopranoApp(Gtk.Application):
 	def on_activated(self, widget, row, col):
 		model = widget.get_model()
 		text = model[row][7]
-		GObject.idle_add(self.playitem, text)
+		GLib.idle_add(self.playitem, text)
 		self.iconoListView.set_playmark(row)
 
 	#View Menu Handlers
@@ -387,7 +393,7 @@ class SopranoApp(Gtk.Application):
 
 	#Bottom Toolbar Handlers#
 	def clear_liststore(self, action):
-		GObject.idle_add(self.stop_play)
+		GLib.idle_add(self.stop_play)
 		self.iconoListView.return_model().clear()
 
 	def shuffleliststore(self, button):
@@ -447,7 +453,7 @@ class SopranoApp(Gtk.Application):
 	def play_prev(self, widget=None):
 		for x in range(1,len(self.iconoListView.return_model())):
 			if self.iconoListView.return_model()[x][0] == 'media-playback-start':
-				GObject.idle_add(self.playitem, self.iconoListView.return_model()[x-1][7])
+				GLib.idle_add(self.playitem, self.iconoListView.return_model()[x-1][7])
 				self.iconoListView.set_playmark(x-1)
 				break
 
@@ -458,7 +464,7 @@ class SopranoApp(Gtk.Application):
 			arand = random.randrange(0, listlength)
 			self.iconoListView.set_playmark(arand)
 			self.iconoListView.get_sw().get_child().scroll_to_cell(arand)
-			GObject.idle_add(self.playitem, self.iconoListView.return_model()[arand][7])
+			GLib.idle_add(self.playitem, self.iconoListView.return_model()[arand][7])
 			return
 		for x in range(0, listlength):
 			#if there on the last track, and they press next without repeat enabled, do nothing
@@ -475,19 +481,19 @@ class SopranoApp(Gtk.Application):
 					break
 			#if the last track finished without repeat enabled, stop playing
 			elif x == listlength-1 and not(self.repeat) and widget != self.toolnext:
-				GObject.idle_add(self.stop_play)
+				GLib.idle_add(self.stop_play)
 				break
 			#if there on the last track and repeat is enabled go back to the first track
 			elif x == listlength-1 and self.repeat:
 				self.iconoListView.set_playmark(0)
 				self.iconoListView.get_sw().get_child().scroll_to_cell(0)
-				GObject.idle_add(self.playitem, self.iconoListView.return_model()[0][7])
+				GLib.idle_add(self.playitem, self.iconoListView.return_model()[0][7])
 				break
 			#if not the last track, just find the playmark and play the track below
 			if self.iconoListView.return_model()[x][0] == 'media-playback-start':
 				self.iconoListView.set_playmark(x+1)
 				self.iconoListView.get_sw().get_child().scroll_to_cell(x+1)
-				GObject.idle_add(self.playitem, self.iconoListView.return_model()[x+1][7])
+				GLib.idle_add(self.playitem, self.iconoListView.return_model()[x+1][7])
 				break
 
 	def playitem(self, filepath):
@@ -509,7 +515,7 @@ class SopranoApp(Gtk.Application):
 			self.toolSeekBar.set_sensitive(True)
 			toolplayimg = self.builder.get_object('image3')
 			toolplayimg.set_from_icon_name('media-playback-pause', Gtk.IconSize.LARGE_TOOLBAR)
-			GObject.idle_add(self.cover_update)
+			GLib.idle_add(self.cover_update)
 		else:
 			self.clear_labels()
 			self.play_next()
@@ -522,7 +528,7 @@ class SopranoApp(Gtk.Application):
 		self.toolSeekBar.set_value(0)
 		toolplayimg = self.builder.get_object('image3')
 		toolplayimg.set_from_icon_name('media-playback-start', Gtk.IconSize.LARGE_TOOLBAR)
-		GObject.idle_add(self.cover_update)
+		GLib.idle_add(self.cover_update)
 
 	def play_pause(self, filepath=None):
 		#print(self.player.get_state())
@@ -552,10 +558,10 @@ class SopranoApp(Gtk.Application):
 			try: filepath = self.iconoListView.return_model().get_value(modeliter, 7)
 			except: return
 			#self.trayplaypause.set_label("Pause")			
-			GObject.idle_add(self.playitem, filepath)
+			GLib.idle_add(self.playitem, filepath)
 			self.iconoListView.set_playmark(modeliter)
 			toolplayimg.set_from_icon_name('media-playback-pause', Gtk.IconSize.LARGE_TOOLBAR)
-			GObject.idle_add(self.cover_update)
+			GLib.idle_add(self.cover_update)
 import sys
 #import fcntl
 #LOCK_PATH = os.path.join(os.path.expanduser('~'), '.sopranolock')
